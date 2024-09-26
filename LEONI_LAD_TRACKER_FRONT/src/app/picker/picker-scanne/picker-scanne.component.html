@@ -1,0 +1,136 @@
+<div class="container-fluid bg-light h-100" style="height: 100vh;">
+
+  <div class="raw glass d-flex justify-content-around h-100" *ngIf="!(noWorkAvailable | async)">
+    <div class="glass col-2 mt-3">
+      <div class="card-body  p-3 " >
+        <p class="light-blue-color">Production line: <span class="orange-color fw-blod"> Lad 1 </span></p>
+        <p class="light-blue-color">Operator: <span class="orange-color fw-blod"> 987456</span></p>
+        <hr>
+        <p class="light-blue-color">project: <span class="orange-color fw-blod">{{currentJob.getValue().harness.project.name}}</span></p>
+        <p class="light-blue-color">Family: <span class="orange-color fw-blod">{{currentJob.getValue().harness.family}}</span></p>
+        <p>Current Reference: <span class="blue-color fw-blod" style="font-size: 1.2rem;">{{currentJob.getValue().harness.ref}}</span></p>
+        <hr>
+        <p class="light-blue-color">To be delivered: <span class="orange-color fw-blod fw-bolder">{{currentJob.getValue().demanded_quantity}}</span></p>
+        <p class="light-blue-color">Delivered: <span class="text-success fw-blod fw-bolder">{{currentJob.getValue().delivered_quantity}}</span></p>
+        <p class="light-blue-color">Rest: <span
+          class="text-warning fw-blod fw-bolder">{{currentJob.getValue().demanded_quantity - currentJob.getValue().delivered_quantity}}</span>
+        </p>
+<!--        <canvas #gaugeChart class=""></canvas>-->
+      </div>
+    </div>
+
+
+    <div class=" col-7 mt-3 ml-2 glass p-3 ">
+      <div class="card-body  h-75">
+        <!--        <button mat-raised-button (click)="isEditable = !isEditable">-->
+        <!--          {{!isEditable ? 'Enable edit mode' : 'Disable edit mode'}}-->
+        <!--        </button>-->
+
+          <div class="d-flex justify-content-around m-3">
+            <p class="light-blue-color">Current Reference: <span class="orange-color fw-bold" >{{currentJob.getValue().harness.ref}}</span></p>
+            <p class="light-blue-color">To be delivered: <span class="orange-color fw-bold ">{{currentJob.getValue().demanded_quantity}}</span></p>
+            <p class="light-blue-color">Delivered: <span class="text-success fw-bold ">{{currentJob.getValue().delivered_quantity}}</span></p>
+            <p class="light-blue-color">Rest: <span
+              class="fw-bolder light-blue-color">{{currentJob.getValue().demanded_quantity - currentJob.getValue().delivered_quantity}}</span>
+            </p>
+          </div>
+
+        <mat-stepper #stepper linear  headerPosition="bottom" class="glass h-100 hide-stepper-indicators">
+          <mat-step (keydown)="nextStepEnter($event)" [editable]="isEditable" >
+            <ng-template matStepLabel>Press Enter</ng-template>
+            <div class="text-center">
+              <br>
+              <img src="/assets/images/steps/entre.png" width="400px">
+              <br>
+              <br>
+              <br>
+            </div>
+          </mat-step>
+
+          <mat-step *ngIf="currentJob.getValue().harness.fuse_box" [editable]="isEditable"
+                    [stepControl]="firstFormGroup">
+            <ng-template matStepLabel>Scan The Box Reference</ng-template>
+            <div class="row">
+              <div class="col-7">
+                <img class="img-fluid" src="assets/images/steps/fuso_box_boxed.png">
+              </div>
+              <div class="col-5 d-flex flex-column justify-content-center">
+                <h4 class="card-title">Scan the Bare code</h4>
+                <form [formGroup]="firstFormGroup" class="mt-2">
+                  <input autofocus
+                         class="form-control border-2 border-primary"
+                         formControlName="firstCtrl"
+                         id="1CtrlInput" placeholder="###########">
+                </form>
+              </div>
+            </div>
+            <div class="d-flex  row justify-content-center">
+
+            </div>
+            <div class="text-center">
+              <sub class="text-center">Be careful to scan the correct <span
+                class="orange-color fw-bold">code barre</span></sub>
+            </div>
+          </mat-step>
+
+          <mat-step [editable]="isEditable" [stepControl]="secondFormGroup">
+            <ng-template matStepLabel>Label Scan</ng-template>
+            <div class="row">
+              <div class="col-7">
+                <p class="text-center ">
+                  <img class="img-fluid" src="assets/images/steps/lableScanner.png" width="300px">
+                </p>
+              </div>
+                <div class="col-5 d-flex flex-column justify-content-center">
+                  <h4 class="card-title ">Scan the lable</h4>
+                  <form [formGroup]="secondFormGroup" class="mt-2">
+                    <input autofocus class="form-control border-2 border-primary"
+                           formControlName="secondCtrl" id="2CtrlInput"
+                           required>
+                  </form>
+                 </div>
+            </div>
+          </mat-step>
+
+          <mat-step>
+            <ng-template matStepLabel>Done</ng-template>
+            <div class="text-center">
+              <div class="text-center">
+                <h2 class="orange-color fw-blod text-success mt-3">
+                  Completed with success
+                </h2>
+                <br>
+                <img src="/assets/images/steps/done.webp" class="img-fluid" width="200px">
+                <br>
+              </div>
+            </div>
+          </mat-step>
+        </mat-stepper>
+      </div>
+    </div>
+
+    <div class="card col-2 mt-3 glass ">
+      <div class="card-body light-blue-color glass" style="height: 80vh">
+        <p class="light-blue-color "> Awaiting jobs: <span class="fw-bolder orange-color">{{ productionJobs.getValue().length }} </span></p>
+        <p>
+          <ng-container *ngFor="let pr of productionJobs.getValue().slice(0,10)">
+            <li class="light-blue-color list-group-item  fw-blod " style="color: #0dcaf0">{{pr.harness.ref}}
+              <sup class="text-dark">{{pr.demanded_quantity}} Unit</sup></li>
+          </ng-container>
+          <span class="text-dark" *ngIf="productionJobs.getValue().length > 10"> +{{  productionJobs.getValue().length - 10 }} Item</span>
+        </p>
+        <hr>
+
+        <p class="light-blue-color ">Date: <span class="orange-color"> {{ currentTime | date: 'dd/MM/yyyy' }}</span></p>
+        <p class="light-blue-color ">Time: <span class="orange-color">{{ currentTime | date: 'HH:mm:ss' }}</span></p>
+        <hr>
+        <canvas #gaugeChart class=""></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="raw  d-flex justify-content-around pt-5" *ngIf="(noWorkAvailable | async)">
+    <h1 class="display-1 text-warning fw-bold">
+      No Work Available
+    </h1>
+  </div>
+</div>
