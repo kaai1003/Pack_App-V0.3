@@ -1,6 +1,16 @@
 import {AfterViewInit, Component, ElementRef, HostListener, input, OnInit, ViewChild} from '@angular/core';
 import {MatStepper, MatStepperModule} from "@angular/material/stepper";
-import {BehaviorSubject, concatMap, debounce, debounceTime, firstValueFrom, map, of, queueScheduler, switchMap} from "rxjs";
+import {
+  BehaviorSubject,
+  concatMap,
+  debounce,
+  debounceTime,
+  firstValueFrom,
+  map,
+  of,
+  queueScheduler,
+  switchMap
+} from "rxjs";
 import {catchError, tap} from "rxjs/operators";
 import {PackagingBoxDto} from "../../dtos/packaging-box.dto";
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -14,16 +24,16 @@ import {HarnessService} from "../../services/harness.service";
 import {PackagingBoxService} from "../../services/packaging.box.service";
 import {ProdHarnessService} from "../../services/prod-harness.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
-import { CreateProdHarnessDTO } from '../../dtos/create-prod-harness.dto';
-import { StorageService } from '../../services/storage.service';
-import { LineDashboardService } from '../../services/line.dashboard';
-import { CountHourLineDto } from '../../dtos/Line.dashboard.dto';
-import { LineDisplayDialogComponent } from '../line-display-dialog/line-display-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
-import { PrintingService } from '../../services/printer-service';
-import { PrintLabelRequest } from '../../dtos/settings.dto';
-import { AuthServiceService } from '../../services/auth-service.service';
-import { HarnessModel } from '../../models/harness.model';
+import {CreateProdHarnessDTO} from '../../dtos/create-prod-harness.dto';
+import {StorageService} from '../../services/storage.service';
+import {LineDashboardService} from '../../services/line.dashboard';
+import {CountHourLineDto} from '../../dtos/Line.dashboard.dto';
+import {LineDisplayDialogComponent} from '../line-display-dialog/line-display-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
+import {PrintingService} from '../../services/printer-service';
+import {PrintLabelRequest} from '../../dtos/settings.dto';
+import {AuthServiceService} from '../../services/auth-service.service';
+import {HarnessModel} from '../../models/harness.model';
 
 @Component({
   selector: 'app-packaging-scan',
@@ -35,59 +45,48 @@ import { HarnessModel } from '../../models/harness.model';
 export class PackagingScanComponent implements OnInit, AfterViewInit {
 
   isEditable: boolean = true;
-  currentUuid:  BehaviorSubject<string> = new BehaviorSubject<string>("");
-   balnkObjet = {} as HarnessModel;
+  currentUuid: BehaviorSubject<string> = new BehaviorSubject<string>("");
+  blankObjet = {} as HarnessModel;
   packagingBox: BehaviorSubject<PackagingBoxDto> = new BehaviorSubject<PackagingBoxDto>({
     id: 0,
-    barcode: "", created_by: "1", harness_id: 0, 
-    to_be_delivered_quantity: 0,delivered_quantity: 0, line_id: 1, status: 0,
-    harness: this.balnkObjet
+    barcode: "",
+    created_by: "1",
+    harness_id: 0,
+    to_be_delivered_quantity: 0,
+    delivered_quantity: 0,
+    line_id: 1,
+    status: 0,
+    harness: this.blankObjet
   });
   currentStep: BehaviorSubject<number> = new BehaviorSubject<number>(1);
   packagingForm: FormGroup;
   lastChangedControl: { name: string, value: any } | null = null;
   packagingProcess: BehaviorSubject<PackagingProcess> = new BehaviorSubject<PackagingProcess>({
-    id: 1,
-    segmentId:1,
-    segment: null,
-    status: 1,
-    name: "Sample Packaging Process",
-    steps: []
+    id: 1, segmentId: 1, segment: null, status: 1, name: "Sample Packaging Process", steps: []
   });
-  packagingSteps: BehaviorSubject<PackagingStep[]> = new BehaviorSubject<PackagingStep[]> ([]);
-  packagingStepsAll: BehaviorSubject<PackagingStep[]> = new BehaviorSubject<PackagingStep[]> ([]);
-  loopsSteps:  BehaviorSubject<PackagingStep[]> = new BehaviorSubject<PackagingStep[]> ([]);
+  packagingSteps: BehaviorSubject<PackagingStep[]> = new BehaviorSubject<PackagingStep[]>([]);
+  packagingStepsAll: BehaviorSubject<PackagingStep[]> = new BehaviorSubject<PackagingStep[]>([]);
+  loopsSteps: BehaviorSubject<PackagingStep[]> = new BehaviorSubject<PackagingStep[]>([]);
   prodHarness!: CreateProdHarnessDTO;
-  currentRef : BehaviorSubject<string> = new BehaviorSubject<string>("");
+  currentRef: BehaviorSubject<string> = new BehaviorSubject<string>("");
   activeStep: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   currentCounter: BehaviorSubject<string> = new BehaviorSubject<string>("");
   currentBoxSize: string = "";
   isPackagingStepTerminate: boolean = false;
   currentTime: Date = new Date();
-  private chart: Chart | undefined;
   @ViewChild('labelInput') labelInput!: ElementRef;
   @ViewChild(MatStepper) stepper!: MatStepper;
-  @ViewChild('myPieChart') private pieChartRef!: ElementRef;
   filterForm: FormGroup = this.formBuilder.group({
-    from: [this.formatDate(new Date()), Validators.required],
-    to: [this.formatDate(new Date()), Validators.required]
+    from: [this.formatDate(new Date()), Validators.required], to: [this.formatDate(new Date()), Validators.required]
   });
-
-  countFxPerHour: CountHourLineDto[] =[];
+  countFxPerHour: CountHourLineDto[] = [];
   totalOfDeliveredHarnessPershift: number = 0;
-  constructor(private formBuilder: FormBuilder,
-              private snackBar: MatSnackBar,
-              private packagingProcessService: PackagingProcessService,
-              private packagingBoxService: PackagingBoxService,
-              private prodHarnessService: ProdHarnessService,
-              public storageService: StorageService,
-              private dialog: MatDialog,
-              private printerService: PrintingService,
-              public authService: AuthServiceService,
-              private lineDashboardService: LineDashboardService,
-              private harnessService: HarnessService) {
+  private chart: Chart | undefined;
+  @ViewChild('myPieChart') private pieChartRef!: ElementRef;
+
+  constructor(private formBuilder: FormBuilder, private snackBar: MatSnackBar, private packagingProcessService: PackagingProcessService, private packagingBoxService: PackagingBoxService, private prodHarnessService: ProdHarnessService, public storageService: StorageService, private dialog: MatDialog, private printerService: PrintingService, public authService: AuthServiceService, private lineDashboardService: LineDashboardService, private harnessService: HarnessService) {
     this.packagingForm = this.formBuilder.group({
-      label:["", Validators.required]
+      label: ["", Validators.required]
     });
   }
 
@@ -95,103 +94,86 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
    *
    */
   ngOnInit(): void {
-    
-    this.packagingForm.get('label')?.valueChanges.pipe(
-      tap(value =>{
-        if(value != "" && value === this.storageService.getItem('current_box_prefix') + this.packagingBox.getValue().barcode){
-          this.stepper.reset()
-          window.location.reload();
-        }else{
-          this.snackBar.open("value not correct", "OK",{duration:3000})
-        }
-      })
-    ).subscribe()
+
+    this.packagingForm.get('label')?.valueChanges.pipe(tap(value => {
+      if (value != "" && value === this.storageService.getItem('current_box_prefix') + this.packagingBox.getValue().barcode) {
+        this.stepper.reset()
+        window.location.reload();
+      } else {
+        this.snackBar.open("value not correct", "OK", {duration: 3000})
+      }
+    })).subscribe()
     this.setDefaultDates()
     const selectedPackagingProcess = this.storageService.getItem("process_id");
-    if(isNaN(selectedPackagingProcess)){
+    if (isNaN(selectedPackagingProcess)) {
       this.snackBar.open("Select packaging process to preform operation")
-    }else{
-      this.packagingProcessService.getProcessById(selectedPackagingProcess).pipe(
-        tap((packagingProcess: PackagingProcess) => {
-          let packagingStepsAll  = packagingProcess.steps.sort((a, b) => a.order - b.order);
-          let packagingSteps  = packagingProcess.steps.filter(step => step.name.includes('packaging')).sort((a, b) => a.order - b.order);
-          let loopSteps  = packagingProcess.steps.filter(step => !step.name.includes('packaging')).sort((a, b) => a.order - b.order);
-          this.loopsSteps.next(loopSteps);
-          this.packagingProcess.next(packagingProcess)
-          this.packagingSteps.next(packagingSteps);
-          this.packagingStepsAll.next(packagingStepsAll);
-          packagingProcess.steps.forEach(step => {
-            const controlName = step.name;
-            this.packagingForm.addControl(controlName, this.formBuilder.control({
-              value: '',
-              disabled: false
-            }, [Validators.required, Validators.minLength(2)]));
-            // Subscribe to valueChanges for each control
-            this.packagingForm.get(controlName)?.valueChanges.pipe(
-              debounceTime(1000)
-            ).subscribe(value => {
-              if (value !== '' ){
-                this.lastChangedControl = { name: controlName, value: value };
-                this.evaluateStepCondition(step);
-              }
-            });
-          });
-          this.packagingForm.addControl('label', this.formBuilder.control({
-            value: '',
-            disabled: false
+    } else {
+      this.packagingProcessService.getProcessById(selectedPackagingProcess).pipe(tap((packagingProcess: PackagingProcess) => {
+        let packagingStepsAll = packagingProcess.steps.sort((a, b) => a.order - b.order);
+        let packagingSteps = packagingProcess.steps.filter(step => step.name.includes('packaging')).sort((a, b) => a.order - b.order);
+        let loopSteps = packagingProcess.steps.filter(step => !step.name.includes('packaging')).sort((a, b) => a.order - b.order);
+        this.loopsSteps.next(loopSteps);
+        this.packagingProcess.next(packagingProcess)
+        this.packagingSteps.next(packagingSteps);
+        this.packagingStepsAll.next(packagingStepsAll);
+        packagingProcess.steps.forEach(step => {
+          const controlName = step.name;
+          this.packagingForm.addControl(controlName, this.formBuilder.control({
+            value: '', disabled: false
           }, [Validators.required, Validators.minLength(2)]));
-        })
-      ).subscribe({
-        next:()=>{
-          this.packagingForm.get('label')?.valueChanges.pipe(
-            tap(value =>{
-                const prefix = this.storageService.getItem('current_box_prefix')
-                if((prefix + value) === this.packagingBox.getValue().barcode){
-                    this.packagingBox.getValue().status = 2;
-                    this.packagingBoxService.updatePackagingBox(this.packagingBox.getValue().id,this.packagingBox.getValue())
-                    .subscribe({
-                      next:(value)=>{
-                        this.stepper.reset()
-                      },
-                      error:(err)=>{
-                        this.snackBar.open(err.message, 'Ok', {duration:3000})
-                      }
-                    })
-                }
-            })
-          ).subscribe()
+          // Subscribe to valueChanges for each control
+          this.packagingForm.get(controlName)?.valueChanges.pipe(debounceTime(1000)).subscribe(value => {
+            if (value !== '') {
+              this.lastChangedControl = {name: controlName, value: value};
+              this.evaluateStepCondition(step);
+            }
+          });
+        });
+        this.packagingForm.addControl('label', this.formBuilder.control({
+          value: '', disabled: false
+        }, [Validators.required, Validators.minLength(2)]));
+      })).subscribe({
+        next: () => {
+          this.packagingForm.get('label')?.valueChanges.pipe(tap(value => {
+            const prefix = this.storageService.getItem('current_box_prefix')
+            if ((prefix + value) === this.packagingBox.getValue().barcode) {
+              this.packagingBox.getValue().status = 2;
+              this.packagingBoxService.updatePackagingBox(this.packagingBox.getValue().id, this.packagingBox.getValue())
+                .subscribe({
+                  next: (value) => {
+                    this.stepper.reset()
+                  }, error: (err) => {
+                    this.snackBar.open(err.message, 'Ok', {duration: 3000})
+                  }
+                })
+            }
+          })).subscribe()
         }
       });
     }
-   
 
-  
 
     setInterval(() => {
       this.currentTime = new Date();
     }, 1000);
-    // check if ther is a opend package 
-    // if exsit load it to contunie work on it 
+    // check if ther is a opend package
+    // if exsit load it to contunie work on it
     let lineId = this.storageService.getItem("packagingCurrentLine");
-    this.packagingBoxService.getOpendPackageByLineId(lineId).pipe(
-      tap((packageBox) => {
-        this.packagingBox.next(packageBox)
-        this.snackBar.open( "Please complete the following package "+packageBox.barcode , "ok" ,{
-          duration:50000,
-          verticalPosition: 'bottom',
-          panelClass: ['danger-snackbar']
-        })
-        this.currentRef.next(packageBox.harness ? packageBox.harness.ref :"") 
-        
-        this.storageService.setItem('current_box_prefix', this.packagingStepsAll.getValue()[0].pre_fix) 
-
-        for (let index = 0 ; index < this.packagingSteps.getValue().length +1; index++) {
-          this.stepper.next()
-        }   
-              // else return to first step of loop
+    this.packagingBoxService.getOpendPackageByLineId(lineId).pipe(tap((packageBox) => {
+      this.packagingBox.next(packageBox)
+      this.snackBar.open("Please complete the following package " + packageBox.barcode, "ok", {
+        duration: 50000, verticalPosition: 'bottom', panelClass: ['danger-snackbar']
       })
-    ).subscribe({
-      next:()=>{
+      this.currentRef.next(packageBox.harness ? packageBox.harness.ref : "")
+
+      this.storageService.setItem('current_box_prefix', this.packagingStepsAll.getValue()[0].pre_fix)
+
+      for (let index = 0; index < this.packagingSteps.getValue().length + 1; index++) {
+        this.stepper.next()
+      }
+      // else return to first step of loop
+    })).subscribe({
+      next: () => {
         const nextStep = this.stepper.selectedIndex;
         this.focusCtrl(nextStep);
       }
@@ -201,29 +183,27 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
   }
 
 
-  getDataForCharts(){
-    const filters =  {
+  getDataForCharts() {
+    const filters = {
       from: this.formatDate(this.filterForm.get('from')?.value),
       to: this.formatDate(this.filterForm.get('to')?.value),
       temps_game: this.storageService.getItem('line_disply_rangeTime')
-      }
-    this.lineDashboardService.getQuantityByHour(filters).subscribe(
-      (data: any) => {
-        this.countFxPerHour = data
-        // this.initializeCharts();
-      }
-        ,
-      (error) => {
-        console.error('Error fetching hourly quantity:', error);
-      }
-    );
+    }
+    this.lineDashboardService.getQuantityByHour(filters).subscribe((data: any) => {
+      this.countFxPerHour = data
+      // this.initializeCharts();
+    }, (error) => {
+      console.error('Error fetching hourly quantity:', error);
+    });
   }
 
   /**
    *
    */
   ngAfterViewInit(): void {
-    setTimeout(()=>{this.initializeCharts()},3000)
+    setTimeout(() => {
+      this.initializeCharts()
+    }, 3000)
   }
 
   /**
@@ -233,7 +213,7 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
    * Evaluates the condition of a packaging step.
    * @param step - The current packaging step to evaluate.
    */
-   async evaluateStepCondition(step: PackagingStep): Promise<void> {
+  async evaluateStepCondition(step: PackagingStep): Promise<void> {
     const formValue = this.packagingForm.getRawValue();
     const conditionMet = await this.checkCondition(step, formValue);
     if (conditionMet) {
@@ -241,97 +221,80 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
       const currentQuantity = this.packagingBox.getValue().delivered_quantity;
       const totalQuantity = this.packagingBox.getValue().to_be_delivered_quantity;
       if (step.order === totalSteps) {
-        let prodHarness = new CreateProdHarnessDTO(this.currentCounter.getValue(),null,this.packagingBox.getValue().barcode,null,this.packagingBox.getValue().id,2,this.packagingBox.getValue().harness.id)
-        this.prodHarnessService.createProdHarness(prodHarness).pipe(
-          tap(response => {
-              if (response && response.response) {
-                  console.log('ProdHarness created successfully');
-                  this.packagingBox.getValue().delivered_quantity++
-                  // Go to last step
-                  if (this.packagingBox.getValue().delivered_quantity >= this.packagingBox.getValue().to_be_delivered_quantity){
-                   this.stepper.next();
-                  //  this.focusOnLabel()
-                  //  let lable = new PrintLabelRequest(this.packagingBox.getValue().barcode, this.packagingBox.getValue().barcode)
-                  //  this.printerService.printLable(lable).subscribe()
-                    this.focusOnLabel();
-                     return;
-                  }else {
-                  // create a new prod harness 
-                  // else return to first step of loop
-                  this.activeStep.next(this.loopsSteps.getValue()[0].order)
-                  this.currentCounter.next("")
-                  this.focusCtrl(this.loopsSteps.getValue()[0].order );
-                }
-              } else {
-                  console.error('Failed to create ProdHarness');
-                  this.snackBar.open("Failed to create new production harness", "ok", {duration: 3000})
-                  this.activeStep.next(this.loopsSteps.getValue()[0].order)
-                  this.currentCounter.next("")
-                  this.focusCtrl(this.loopsSteps.getValue()[0].order );
-                  // Handle failure case, if the response is false but no error was thrown
-                  // Optionally, you can show a failure message to the user
-                  // this.notificationService.showError('Failed to create ProdHarness');
-              }
-          }),
-          catchError(error => {
-              console.error('Error occurred while creating ProdHarness:', error);
-              this.snackBar.open("Failed to create new production harness", "ok", {duration: 3000})
+        let prodHarness = new CreateProdHarnessDTO(this.currentCounter.getValue(), null, this.packagingBox.getValue().barcode, null, this.packagingBox.getValue().id, 2, this.packagingBox.getValue().harness.id)
+        this.prodHarnessService.createProdHarness(prodHarness).pipe(tap(response => {
+          if (response && response.response) {
+            console.log('ProdHarness created successfully');
+            this.packagingBox.getValue().delivered_quantity++
+            // Go to last step
+            if (this.packagingBox.getValue().delivered_quantity >= this.packagingBox.getValue().to_be_delivered_quantity) {
+              this.stepper.next();
+              //  this.focusOnLabel()
+              //  let lable = new PrintLabelRequest(this.packagingBox.getValue().barcode, this.packagingBox.getValue().barcode)
+              //  this.printerService.printLable(lable).subscribe()
+              this.focusOnLabel();
+              return;
+            } else {
+              // create a new prod harness
+              // else return to first step of loop
               this.activeStep.next(this.loopsSteps.getValue()[0].order)
               this.currentCounter.next("")
-              this.focusCtrl(this.loopsSteps.getValue()[0].order );
-              // Handle error case, e.g., show an error message to the user
-              // this.notificationService.showError('An error occurred while creating ProdHarness');
-              return of(null); // Return a fallback value or empty observable to keep the stream alive
-          })
-      ).subscribe();
-        // this.prodHarnessService.getByRef(this.currentUuid.getValue()).pipe(
-        //   tap(harness => {
-        //     harness.packaging_box_id = this.packagingBox.getValue().id;
-        //     harness.box_number = this.packagingBox.getValue().barcode;
-        //     harness.status = 2;
-        //   }),
-        //   switchMap(harness =>
-        //     this.prodHarnessService.updateHarness(harness).pipe(
-        //       tap(updatedHarness => {
-        //       })
-        //     )
-        //   )
-        // ).subscribe();
-     
+              this.focusCtrl(this.loopsSteps.getValue()[0].order);
+            }
+          } else {
+            console.error('Failed to create ProdHarness');
+            this.snackBar.open("Failed to create new production harness", "ok", {duration: 3000})
+            this.activeStep.next(this.loopsSteps.getValue()[0].order)
+            this.currentCounter.next("")
+            this.focusCtrl(this.loopsSteps.getValue()[0].order);
+            // Handle failure case, if the response is false but no error was thrown
+            // Optionally, you can show a failure message to the user
+            // this.notificationService.showError('Failed to create ProdHarness');
+          }
+        }), catchError(error => {
+          console.error('Error occurred while creating ProdHarness:', error);
+          this.snackBar.open("Failed to create new production harness", "ok", {duration: 3000})
+          this.activeStep.next(this.loopsSteps.getValue()[0].order)
+          this.currentCounter.next("")
+          this.focusCtrl(this.loopsSteps.getValue()[0].order);
+          // Handle error case, e.g., show an error message to the user
+          // this.notificationService.showError('An error occurred while creating ProdHarness');
+          return of(null); // Return a fallback value or empty observable to keep the stream alive
+        })).subscribe();
+
       }
       // in loops step
-      else if (step.order > this.packagingSteps.getValue().length ) {
+      else if (step.order > this.packagingSteps.getValue().length) {
 
         this.isPackagingStepTerminate = true;
-          // if we past the packaging steps
-        if (step.order === this.packagingSteps.getValue().length-2 ) {
-              if(step.order == totalSteps){             }
-        }
-        else {
-          const nextStep = this.stepper.selectedIndex+1;
+        // if we past the packaging steps
+        if (step.order === this.packagingSteps.getValue().length - 2) {
+          if (step.order == totalSteps) {
+          }
+        } else {
+          const nextStep = this.stepper.selectedIndex + 1;
           this.currentStep.next(nextStep);
           this.activeStep.next(nextStep);
-          this.focusCtrl(nextStep );
+          this.focusCtrl(nextStep);
         }
       }
-      // go toconfirmation step  
+      // go toconfirmation step
       else {
         const nextStep = this.currentStep.getValue() + 1;
         this.currentStep.next(nextStep);
         this.activeStep.next(nextStep);
-        this.focusCtrl(nextStep );
+        this.focusCtrl(nextStep);
       }
 
-     if (step.order === this.packagingSteps.getValue().length ){
+      if (step.order === this.packagingSteps.getValue().length) {
         this.createPackage(this.packagingBox.getValue())
       }
 
     }
     // error case
-    else{
+    else {
       this.snackBar.open('The scanned fields are not correct.', 'Close', {
-        duration: 1000,
-        // panelClass: 'danger-snackBar',
+        duration: 1000, // panelClass: 'danger-snackBar',
         verticalPosition: 'bottom',
         panelClass: ['custom-snackbar', 'display-5'],
         announcementMessage: 'Announcement message for screen readers',
@@ -339,7 +302,6 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
     }
     this.packagingForm.get(step.name)?.setValue('')
   }
-
 
 
   /**
@@ -356,68 +318,34 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
    *
    */
   initializeCharts(): void {
-    // const ctx = this.pieChartRef.nativeElement.getContext('2d');
-    // // const labels = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'H7', 'H8'];
-    // this.chart = new Chart(ctx, {
-    //   type: 'doughnut',  // Changed to doughnut for a more gauge-like appearance
-    //   data: {
-    //     labels: ['Delivered Quantity', 'Remaining Quantity'],
-    //     datasets: [{
-    //       label: 'Production Quantity',
-    //       data: [
-    //         this.packagingBox.getValue().to_be_delivered_quantity,10
-    //         // this.packagingBox.getValue().quantity
-    //       ],
-    //       backgroundColor: [
-    //         'rgba(54,162,235,0.75)',
-    //         'rgba(255,117,20,0.73)',
-    //       ]
-    //     }]
-    //   },
-    //   options: {
-    //     responsive: true,
-    //     plugins: {
-    //       tooltip: {
-    //         callbacks: {
-    //           label: function(context) {
-    //             const label = context.label || '';
-    //             return label + ': ' + context.raw + ' units';
-    //           }
-    //         }
-    //       }
-    //     }
-    //   }
-    // });
-
-
     let postedHours: CountHourLineDto[] = []
     let start = new Date(this.formatDate(this.filterForm.get('from')?.value))
     let to = new Date(this.formatDate(this.filterForm.get('to')?.value))
     let hourCout = 0;
     do {
-  
-      let hourInApiHours =  this.countFxPerHour.find(hour => hour.hour == start.getHours())
-      if(hourInApiHours) {
-        postedHours.push(new CountHourLineDto(hourInApiHours.total_quantity,start.getHours()))
-      }else{
+
+      let hourInApiHours = this.countFxPerHour.find(hour => hour.hour == start.getHours())
+      if (hourInApiHours) {
+        postedHours.push(new CountHourLineDto(hourInApiHours.total_quantity, start.getHours()))
+      } else {
         console.log("not found");
-        postedHours.push(new CountHourLineDto(0,start.getHours()))
+        postedHours.push(new CountHourLineDto(0, start.getHours()))
       }
-      start.setHours(start.getHours()+ 1)  
+      start.setHours(start.getHours() + 1)
       hourCout++;
-    } while ( hourCout < 8)
+    } while (hourCout < 8)
 
     this.countFxPerHour = postedHours
-    this.countFxPerHour.map(value => { this.totalOfDeliveredHarnessPershift += parseInt(value.total_quantity.toString()) })
+    this.countFxPerHour.map(value => {
+      this.totalOfDeliveredHarnessPershift += parseInt(value.total_quantity.toString())
+    })
 
-    
+
     const ctx2 = document.getElementById('myChart2') as HTMLCanvasElement;
     const labels = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'H7', 'H8'];
     new Chart(ctx2, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
+      type: 'line', data: {
+        labels: labels, datasets: [{
           label: 'Harness per hour',
           data: this.countFxPerHour.map(value => value.total_quantity),
           fill: false,
@@ -425,17 +353,12 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
           backgroundColor: 'rgb(0,128,255)', // Blue color for points
           tension: 0.1,
         }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
+      }, options: {
+        responsive: true, plugins: {
           legend: {
-            display: false,
-            position: 'top',
-          },
-          title: {
-            display: false,
-            text: 'progress'
+            display: false, position: 'top',
+          }, title: {
+            display: false, text: 'progress'
           }
         }
       }
@@ -446,10 +369,9 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
    *
    * @param event
    */
-  @HostListener('window:keydown.enter', ['$event'])
-  nextStepEnter(event: KeyboardEvent): void {
+  @HostListener('window:keydown.enter', ['$event']) nextStepEnter(event: KeyboardEvent): void {
     if (this.activeStep.getValue() === 0) {
-      this.activeStep.next(this.stepper.selectedIndex+1)
+      this.activeStep.next(this.stepper.selectedIndex + 1)
       this.currentStep.next(1);
       this.focusCtrl(1)
     }
@@ -461,10 +383,10 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
    */
   focusCtrl(stepNumber: number): void {
     setTimeout(() => {
-      const CtrlInput = document.getElementById( `step${stepNumber}`) as HTMLInputElement;
+      const CtrlInput = document.getElementById(`step${stepNumber}`) as HTMLInputElement;
       if (CtrlInput) {
         CtrlInput.focus();
-      }else{
+      } else {
         // alert('control not fond' + stepNumber)
       }
     }, 100);
@@ -481,100 +403,94 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
         case 'packaging#Box barcode':
           if (formValue['packaging#Box barcode'] !== '') {
             let input = formValue['packaging#Box barcode'];
-           // if step prefix not null get the same length from input and test the equality
-           if(step.pre_fix != ""){
-             let preFix = input.substring(0,step.pre_fix.length)
-             step.pre_fix.length >= input.length ? resolve(false) : "";
-             // if the prefix are equal get the quantity and go to next step else return false
-             if(preFix === step.pre_fix){
-               let partNumber = input.substring(preFix.length,input.length)
-               this.packagingBoxService.checkIfBoxExsit(partNumber).subscribe({
-                next:(value)=>{
-                if(!value.status){
-                  this.packagingBox.getValue().barcode = partNumber
-                  resolve(true)
-                  this.storageService.setItem('current_box_prefix', preFix);
-                }else{
-                    this.snackBar.open('Box already exist ', 'Ok',{duration:5000})
+            // if step prefix not null get the same length from input and test the equality
+            if (step.pre_fix != "") {
+              let preFix = input.substring(0, step.pre_fix.length)
+              step.pre_fix.length >= input.length ? resolve(false) : "";
+              // if the prefix are equal get the quantity and go to next step else return false
+              if (preFix === step.pre_fix) {
+                let partNumber = input.substring(preFix.length, input.length)
+                this.packagingBoxService.checkIfBoxExsit(partNumber).subscribe({
+                  next: (value) => {
+                    if (!value.status) {
+                      this.packagingBox.getValue().barcode = partNumber
+                      resolve(true)
+                      this.storageService.setItem('current_box_prefix', preFix);
+                    } else {
+                      this.snackBar.open('Box already exist ', 'Ok', {duration: 5000})
+                      resolve(false)
+                    }
+                  }, error: (err) => {
+                    this.snackBar.open(err.message)
                     resolve(false)
-                } 
-                },
-                error:(err)=>{
+                    of(null);
+                  }
+                })
+
+              } else {
+                resolve(false)
+              }
+            } else {
+
+              resolve(true)
+              this.packagingBoxService.checkIfBoxExsit(input).subscribe({
+                next: (value) => {
+                  if (!value.status) {
+                    this.packagingBox.getValue().barcode = input
+                    this.storageService.setItem('current_box_prefix', '');
+                    resolve(true)
+                  } else {
+                    this.snackBar.open('Box already exist ', 'Ok', {duration: 5000})
+                  }
+                }, error: (err) => {
                   this.snackBar.open(err.message)
                   resolve(false)
-                   of(null);
+                  of(null);
                 }
-               })
-             
-             }else{
-              resolve(false)
-             }
-           }else{
-            
-            resolve(true)
-            this.packagingBoxService.checkIfBoxExsit(input).subscribe({
-              next:(value)=>{
-              if(!value.status){
-                this.packagingBox.getValue().barcode = input
-                this.storageService.setItem('current_box_prefix', '');
-                resolve(true)
-              }else{
-                  this.snackBar.open('Box already exist ', 'Ok',{duration:5000})
-              } 
-              },
-              error:(err)=>{
-                this.snackBar.open(err.message)
-                resolve(false)
-                 of(null);
-              }
-             })
-           }
-     } else {
-       resolve(false);
-     }
+              })
+            }
+          } else {
+            resolve(false);
+          }
           break;
         case 'packaging#Box harness-reference':
           let input = formValue['packaging#Box harness-reference']
-            // if step prefix not null get the same length from input and test the equality
-          if(step.pre_fix != ""){
-            let preFix = input.substring(0,step.pre_fix.length)
+          // if step prefix not null get the same length from input and test the equality
+          if (step.pre_fix != "") {
+            let preFix = input.substring(0, step.pre_fix.length)
             step.pre_fix.length >= input.length ? resolve(false) : "";
             // if the prefix are equal get the quantity and go to next step else return false
-            if(preFix === step.pre_fix){
-              input.substring(preFix.length,input.length)
-              let harnessReference = input.substring(preFix.length,input.length)
+            if (preFix === step.pre_fix) {
+              input.substring(preFix.length, input.length)
+              let harnessReference = input.substring(preFix.length, input.length)
               // get all harness reference from API and check if the input value are equale one of feteched
-              this.harnessService.getAllHarnesses().pipe(
-                map(values => {
-                  const harness = values.find(is => is.ref === harnessReference);
-                  // if true set the hraness id in the currnet box and set the current reference
-                  if (harness) {
-                    this.packagingBox.getValue().harness_id = harness.id;
-                    this.currentRef.next(harness.ref)
-                    resolve(true);
-                  } else {
-                    resolve(false);
-                  }
-                })
-              ).subscribe();
-            }else{
-               resolve(false)
+              this.harnessService.getAllHarnesses().pipe(map(values => {
+                const harness = values.find(is => is.ref === harnessReference);
+                // if true set the hraness id in the currnet box and set the current reference
+                if (harness) {
+                  this.packagingBox.getValue().harness_id = harness.id;
+                  this.currentRef.next(harness.ref)
+                  resolve(true);
+                } else {
+                  resolve(false);
+                }
+              })).subscribe();
+            } else {
+              resolve(false)
             }
-          // If setp dont containe prefix
-          }else{
-              // get all harness reference from API and check if the input value are equale one of feteched
-              this.harnessService.getAllHarnesses().pipe(
-                map(values => {
-                  const harness = values.find(is => is.ref === input);
-                  if (harness) {
-                    this.packagingBox.getValue().harness_id = harness.id;
-                    this.currentRef.next(harness.ref)
-                    resolve(true);
-                  } else {
-                    resolve(false);
-                  }
-                })
-              ).subscribe();
+            // If setp dont containe prefix
+          } else {
+            // get all harness reference from API and check if the input value are equale one of feteched
+            this.harnessService.getAllHarnesses().pipe(map(values => {
+              const harness = values.find(is => is.ref === input);
+              if (harness) {
+                this.packagingBox.getValue().harness_id = harness.id;
+                this.currentRef.next(harness.ref)
+                resolve(true);
+              } else {
+                resolve(false);
+              }
+            })).subscribe();
           }
           break;
         case 'packaging#Box quantity':
@@ -582,19 +498,19 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
             let input = formValue['packaging#Box quantity'];
             let preFix: string;
             // if step prefix not null get the same length from input and test the equality
-            if (step.pre_fix != "" ) {
+            if (step.pre_fix != "") {
               step.pre_fix.length >= input.length ? resolve(false) : "";
               preFix = step.pre_fix;
               let inputPreFix = input.substring(0, preFix.length);
               // if the prefix are equal get the quantity and go to next step else return false
-              if(preFix === inputPreFix) {
+              if (preFix === inputPreFix) {
                 let netValue = input.substring(preFix.length, input.length);
                 let netValueNumber = parseFloat(netValue); // Convert substring to a number
                 if (!isNaN(netValueNumber)) {
-                  this.packagingBox.getValue().to_be_delivered_quantity = netValue ;
+                  this.packagingBox.getValue().to_be_delivered_quantity = netValue;
                   resolve(true)
                 } else {
-                    resolve(false)
+                  resolve(false)
                 }
               } else {
                 resolve(false)
@@ -604,10 +520,10 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
             else {
               let netValueNumber = parseFloat(input);
               if (!isNaN(netValueNumber)) {
-                this.packagingBox.getValue().to_be_delivered_quantity = netValueNumber ;
+                this.packagingBox.getValue().to_be_delivered_quantity = netValueNumber;
                 resolve(true)
               } else {
-                  resolve(false)
+                resolve(false)
               }
             }
           } else {
@@ -627,84 +543,84 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
           break;
         case 'BOL 1#Counter':
           // if (formValue['BOL 1#Counter'] !== '') {
-            if (formValue['BOL 1#Counter'] !== '') {
-              let input = formValue['BOL 1#Counter'];
-              let preFix: string;
-              // if step prefix not null get the same length from input and test the equality
-              if (step.pre_fix != "" ) {
-                step.pre_fix.length >= input.length ? resolve(false) : "";
-                preFix = step.pre_fix;
-                let inputPreFix = input.substring(0, preFix.length);
-                // if the prefix are equal get the quantity and go to next step else return false
-                if(preFix === inputPreFix) {
-                  input.substring(preFix.length,input.length)
-                  let counter = input.substring(preFix.length,input.length)
-                  this.checkIfCounterExist(counter).then(exist =>{
-                      if (exist){
-                        resolve(false);
-                      }
-                      else{
-                        if(this.currentCounter.getValue() === ""){
-                          this.currentCounter.next(counter) 
-                          resolve(true);
-                        }else{
-                          this.currentCounter.getValue() === counter ? resolve(true) : resolve(false)
-                        }
-                      }
-                  })
-                } else { resolve(false) }
-              }
-              // if step dont contain prefix
-              else {
-                let counter = input
-                this.checkIfCounterExist(counter).then(exist =>{
-                    if (exist){
-                      resolve(false);
+          if (formValue['BOL 1#Counter'] !== '') {
+            let input = formValue['BOL 1#Counter'];
+            let preFix: string;
+            // if step prefix not null get the same length from input and test the equality
+            if (step.pre_fix != "") {
+              step.pre_fix.length >= input.length ? resolve(false) : "";
+              preFix = step.pre_fix;
+              let inputPreFix = input.substring(0, preFix.length);
+              // if the prefix are equal get the quantity and go to next step else return false
+              if (preFix === inputPreFix) {
+                input.substring(preFix.length, input.length)
+                let counter = input.substring(preFix.length, input.length)
+                this.checkIfCounterExist(counter).then(exist => {
+                  if (exist) {
+                    resolve(false);
+                  } else {
+                    if (this.currentCounter.getValue() === "") {
+                      this.currentCounter.next(counter)
+                      resolve(true);
+                    } else {
+                      this.currentCounter.getValue() === counter ? resolve(true) : resolve(false)
                     }
-                    else{
-                      if(this.currentCounter.getValue() === ""){
-                        this.currentCounter.next(counter) 
-                      }else{
-                        this.currentCounter.getValue() === counter ? resolve(true) : resolve(false)
-                      }
-                    }
+                  }
                 })
+              } else {
+                resolve(false)
               }
-            } else {
-              resolve(false);
             }
-           
+            // if step dont contain prefix
+            else {
+              let counter = input
+              this.checkIfCounterExist(counter).then(exist => {
+                if (exist) {
+                  resolve(false);
+                } else {
+                  if (this.currentCounter.getValue() === "") {
+                    this.currentCounter.next(counter)
+                  } else {
+                    this.currentCounter.getValue() === counter ? resolve(true) : resolve(false)
+                  }
+                }
+              })
+            }
+          } else {
+            resolve(false);
+          }
+
           // } else {
           //   resolve(false);
           // }
           break;
         case 'BOL 1#Harness reference':
           if (formValue['BOL 1#Harness reference'] !== '') {
-                 let input = formValue['BOL 1#Harness reference'];
-                // if step prefix not null get the same length from input and test the equality
-                if(step.pre_fix != ""){
-                  let preFix = input.substring(0,step.pre_fix.length)
-                  step.pre_fix.length >= input.length ? resolve(false) : "";
-                  // if the prefix are equal get the quantity and go to next step else return false
-                  if(preFix === step.pre_fix){
-                    input.substring(preFix.length,input.length)
-                    let harnessReference = input.substring(preFix.length,input.length)
-                    // check equality
-                    if ( harnessReference == this.currentRef.getValue() || harnessReference == this.packagingBox.getValue().harness.ref ){
-                      resolve(true)
-                     }else{
-                      resolve(false)
-                     }
-                  }else{
-                     resolve(false)
-                  }
-                }else{
-                  if ( input == this.currentRef.getValue() || input == this.packagingBox.getValue().harness.ref ){
-                    resolve(true)
-                   }else{
-                    resolve(false)
-                   }   
+            let input = formValue['BOL 1#Harness reference'];
+            // if step prefix not null get the same length from input and test the equality
+            if (step.pre_fix != "") {
+              let preFix = input.substring(0, step.pre_fix.length)
+              step.pre_fix.length >= input.length ? resolve(false) : "";
+              // if the prefix are equal get the quantity and go to next step else return false
+              if (preFix === step.pre_fix) {
+                input.substring(preFix.length, input.length)
+                let harnessReference = input.substring(preFix.length, input.length)
+                // check equality
+                if (harnessReference == this.currentRef.getValue() || harnessReference == this.packagingBox.getValue().harness.ref) {
+                  resolve(true)
+                } else {
+                  resolve(false)
                 }
+              } else {
+                resolve(false)
+              }
+            } else {
+              if (input == this.currentRef.getValue() || input == this.packagingBox.getValue().harness.ref) {
+                resolve(true)
+              } else {
+                resolve(false)
+              }
+            }
           } else {
             resolve(false);
           }
@@ -717,72 +633,72 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
           }
           break;
         case 'PTA#Counter':
-            if (formValue['PTA#Counter'] !== '') {
-              let input = formValue['PTA#Counter'];
-              let preFix: string;
-              // if step prefix not null get the same length from input and test the equality
-              if (step.pre_fix != "" ) {
-                step.pre_fix.length >= input.length ? resolve(false) : "";
-                preFix = step.pre_fix;
-                let inputPreFix = input.substring(0, preFix.length);
-                // if the prefix are equal get the quantity and go to next step else return false
-                if(preFix === inputPreFix) {
-                  input.substring(preFix.length,input.length)
-                  let counter = input.substring(preFix.length,input.length)
-                  this.checkIfCounterExist(counter).then(exist =>{
-                      if (exist){
-                        resolve(false);
-                      }
-                      else{
-                        if(this.currentCounter.getValue() === ""){
-                          this.currentCounter.next(counter) 
-                          resolve(true);
-                        }else{
-                          this.currentCounter.getValue() === counter ? resolve(true) : resolve(false)
-                        }
-                      }
-                  })
-                } else { resolve(false) }
-              }
-              // if step dont contain prefix
-              else {
-                let counter = input
-                this.checkIfCounterExist(counter).then(exist =>{
-                    if (exist){
-                      resolve(false);
+          if (formValue['PTA#Counter'] !== '') {
+            let input = formValue['PTA#Counter'];
+            let preFix: string;
+            // if step prefix not null get the same length from input and test the equality
+            if (step.pre_fix != "") {
+              step.pre_fix.length >= input.length ? resolve(false) : "";
+              preFix = step.pre_fix;
+              let inputPreFix = input.substring(0, preFix.length);
+              // if the prefix are equal get the quantity and go to next step else return false
+              if (preFix === inputPreFix) {
+                input.substring(preFix.length, input.length)
+                let counter = input.substring(preFix.length, input.length)
+                this.checkIfCounterExist(counter).then(exist => {
+                  if (exist) {
+                    resolve(false);
+                  } else {
+                    if (this.currentCounter.getValue() === "") {
+                      this.currentCounter.next(counter)
+                      resolve(true);
+                    } else {
+                      this.currentCounter.getValue() === counter ? resolve(true) : resolve(false)
                     }
-                    else{
-                      if(this.currentCounter.getValue() === ""){
-                        this.currentCounter.next(counter) 
-                      }else{
-                        this.currentCounter.getValue() === counter ? resolve(true) : resolve(false)
-                      }
-                    }
+                  }
                 })
+              } else {
+                resolve(false)
               }
-            } else {
-              resolve(false);
             }
+            // if step dont contain prefix
+            else {
+              let counter = input
+              this.checkIfCounterExist(counter).then(exist => {
+                if (exist) {
+                  resolve(false);
+                } else {
+                  if (this.currentCounter.getValue() === "") {
+                    this.currentCounter.next(counter)
+                  } else {
+                    this.currentCounter.getValue() === counter ? resolve(true) : resolve(false)
+                  }
+                }
+              })
+            }
+          } else {
+            resolve(false);
+          }
           break;
         case 'PTA#Harness reference':
           if (formValue['PTA#Harness reference'] !== '') {
-                 let input = formValue['PTA#Harness reference'];
-                // if step prefix not null get the same length from input and test the equality
-                if(step.pre_fix != ""){
-                  let preFix = input.substring(0,step.pre_fix.length)
-                  step.pre_fix.length >= input.length ? resolve(false) : "";
-                  // if the prefix are equal get the quantity and go to next step else return false
-                  if(preFix === step.pre_fix){
-                    input.substring(preFix.length,input.length)
-                    let harnessReference = input.substring(preFix.length,input.length)
-                    // check equality 
-                    harnessReference == this.currentRef.getValue() ? resolve(true) : resolve(false);
-                  }else{
-                     resolve(false)
-                  }
-                }else{
-                    input == this.currentRef.getValue() ? resolve(true) : resolve(false);
-                }
+            let input = formValue['PTA#Harness reference'];
+            // if step prefix not null get the same length from input and test the equality
+            if (step.pre_fix != "") {
+              let preFix = input.substring(0, step.pre_fix.length)
+              step.pre_fix.length >= input.length ? resolve(false) : "";
+              // if the prefix are equal get the quantity and go to next step else return false
+              if (preFix === step.pre_fix) {
+                input.substring(preFix.length, input.length)
+                let harnessReference = input.substring(preFix.length, input.length)
+                // check equality
+                harnessReference == this.currentRef.getValue() ? resolve(true) : resolve(false);
+              } else {
+                resolve(false)
+              }
+            } else {
+              input == this.currentRef.getValue() ? resolve(true) : resolve(false);
+            }
           } else {
             resolve(false);
           }
@@ -792,43 +708,43 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
             let input = formValue['BOL 2#Counter'];
             let preFix: string;
             // if step prefix not null get the same length from input and test the equality
-            if (step.pre_fix != "" ) {
+            if (step.pre_fix != "") {
               step.pre_fix.length >= input.length ? resolve(false) : "";
               preFix = step.pre_fix;
               let inputPreFix = input.substring(0, preFix.length);
               // if the prefix are equal get the quantity and go to next step else return false
-              if(preFix === inputPreFix) {
-                input.substring(preFix.length,input.length)
-                let counter = input.substring(preFix.length,input.length)
-                this.checkIfCounterExist(counter).then(exist =>{
-                    if (exist){
-                      resolve(false);
+              if (preFix === inputPreFix) {
+                input.substring(preFix.length, input.length)
+                let counter = input.substring(preFix.length, input.length)
+                this.checkIfCounterExist(counter).then(exist => {
+                  if (exist) {
+                    resolve(false);
+                  } else {
+                    if (this.currentCounter.getValue() === "") {
+                      this.currentCounter.next(counter)
+                      resolve(true);
+                    } else {
+                      this.currentCounter.getValue() === counter ? resolve(true) : resolve(false)
                     }
-                    else{
-                      if(this.currentCounter.getValue() === ""){
-                        this.currentCounter.next(counter) 
-                        resolve(true);
-                      }else{
-                        this.currentCounter.getValue() === counter ? resolve(true) : resolve(false)
-                      }
-                    }
+                  }
                 })
-              } else { resolve(false) }
+              } else {
+                resolve(false)
+              }
             }
             // if step dont contain prefix
             else {
               let counter = input
-              this.checkIfCounterExist(counter).then(exist =>{
-                  if (exist){
-                    resolve(false);
+              this.checkIfCounterExist(counter).then(exist => {
+                if (exist) {
+                  resolve(false);
+                } else {
+                  if (this.currentCounter.getValue() === "") {
+                    this.currentCounter.next(counter)
+                  } else {
+                    this.currentCounter.getValue() === counter ? resolve(true) : resolve(false)
                   }
-                  else{
-                    if(this.currentCounter.getValue() === ""){
-                      this.currentCounter.next(counter) 
-                    }else{
-                      this.currentCounter.getValue() === counter ? resolve(true) : resolve(false)
-                    }
-                  }
+                }
               })
             }
           } else {
@@ -838,33 +754,33 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
         case 'BOL 2#Harness reference':
           if (formValue['BOL 2#Harness reference'] !== '') {
             let input = formValue['BOL 2#Harness reference'];
-           // if step prefix not null get the same length from input and test the equality
-           if(step.pre_fix != ""){
-             let preFix = input.substring(0,step.pre_fix.length)
-             step.pre_fix.length >= input.length ? resolve(false) : "";
-             // if the prefix are equal get the quantity and go to next step else return false
-             if(preFix === step.pre_fix){
-               input.substring(preFix.length,input.length)
-               let harnessReference = input.substring(preFix.length,input.length)          
-               if ( harnessReference == this.currentRef.getValue() || harnessReference == this.packagingBox.getValue().harness.ref ){
+            // if step prefix not null get the same length from input and test the equality
+            if (step.pre_fix != "") {
+              let preFix = input.substring(0, step.pre_fix.length)
+              step.pre_fix.length >= input.length ? resolve(false) : "";
+              // if the prefix are equal get the quantity and go to next step else return false
+              if (preFix === step.pre_fix) {
+                input.substring(preFix.length, input.length)
+                let harnessReference = input.substring(preFix.length, input.length)
+                if (harnessReference == this.currentRef.getValue() || harnessReference == this.packagingBox.getValue().harness.ref) {
+                  resolve(true)
+                } else {
+                  resolve(false)
+                }
+              } else {
+                resolve(false)
+              }
+            } else {
+              if (input == this.currentRef.getValue() || input == this.packagingBox.getValue().harness.ref) {
                 resolve(true)
-               }else{
+              } else {
                 resolve(false)
-               }
-             }else{
-                resolve(false)
-             }
-           }else{
-            if ( input == this.currentRef.getValue() || input == this.packagingBox.getValue().harness.ref ){
-              resolve(true)
-             }else{
-              resolve(false)
-             }
+              }
               input == this.currentRef.getValue() ? resolve(true) : resolve(false);
-           }
-     } else {
-       resolve(false);
-     }
+            }
+          } else {
+            resolve(false);
+          }
           break;
         default:
           resolve(false);
@@ -876,23 +792,21 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
    * this function provide us to create package in back-end
    * @param packagingBoxDto
    */
-  createPackage(packagingBoxDto: PackagingBoxDto): void{
-    this.packagingBoxService.createPackagingBox(packagingBoxDto).pipe(
-      tap(packagingBox => {
-        this.packagingBox.next(packagingBox)
-        // this.packagingBox.getValue().id = packagingBox.id
-      })
-    ).subscribe()
+  createPackage(packagingBoxDto: PackagingBoxDto): void {
+    this.packagingBoxService.createPackagingBox(packagingBoxDto).pipe(tap(packagingBox => {
+      this.packagingBox.next(packagingBox)
+      // this.packagingBox.getValue().id = packagingBox.id
+    })).subscribe()
   }
 
 
   setDefaultDates() {
     const currentDate = new Date();
     const currentHour = currentDate.getHours();
-    
+
     let fromDate: Date;
     let toDate: Date;
-    
+
     if (currentHour >= 22 || currentHour < 6) {
       // Shift C
       fromDate = new Date(currentDate);
@@ -917,18 +831,17 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
       toDate = new Date(currentDate);
       toDate.setHours(22, 0, 0, 0);
     }
-  
+
     this.filterForm.patchValue({
-      from: this.formatDate(fromDate),
-      to: this.formatDate(toDate),
-      // shift: this.getCurrentShift(currentHour)
+      from: this.formatDate(fromDate), to: this.formatDate(toDate), // shift: this.getCurrentShift(currentHour)
     });
   }
-/**
- * 
- * @param date 
- * @returns 
- */
+
+  /**
+   *
+   * @param date
+   * @returns
+   */
   formatDate(date: any): string {
     const d = new Date(date);
     const year = d.getFullYear();
@@ -942,32 +855,32 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
   }
 
 
-/**
- * 
- */
+  /**
+   *
+   */
   openDialog(): void {
     this.dialog.open(LineDisplayDialogComponent, {
-      width: '50%',
-      data: { /* pass any data here if needed */ }
+      width: '50%', data: { /* pass any data here if needed */}
     });
   }
 
 
   focusOnLabel() {
-      setTimeout(() => {
-        const CtrlInput = document.getElementById( `label`) as HTMLInputElement;
-        if (CtrlInput) {
-          CtrlInput.focus();
-        }else{
-          // alert('control not fond' + stepNumber)
-        }
-      }, 100);
+    setTimeout(() => {
+      const CtrlInput = document.getElementById(`label`) as HTMLInputElement;
+      if (CtrlInput) {
+        CtrlInput.focus();
+      } else {
+        // alert('control not fond' + stepNumber)
+      }
+    }, 100);
   }
-/**
- * 
- * @param counter 
- * @returns 
- */
+
+  /**
+   *
+   * @param counter
+   * @returns
+   */
   async checkIfCounterExist(counter: string): Promise<boolean> {
     try {
       const responseData = await firstValueFrom(this.prodHarnessService.getByRef(counter));
@@ -977,9 +890,7 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
     } catch (error) {
       // Handle the error case
       this.snackBar.open('The Counter Not Correct', 'OK', {
-        duration: 5000,
-        panelClass: 'danger',
-        verticalPosition: 'top',
+        duration: 5000, panelClass: 'danger', verticalPosition: 'top',
       });
       return false;
     }

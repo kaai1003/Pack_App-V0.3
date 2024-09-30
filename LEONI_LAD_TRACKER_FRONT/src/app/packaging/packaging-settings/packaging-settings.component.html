@@ -1,71 +1,74 @@
 <div class="container-fliud bk-glass-blue" style="min-height: 100%;">
-    <section class="container">
-        <div class="row mt-3">
-            <form [formGroup]="lineSettings">
-                <h5 class="orange-color fw-light" style="border-left: 5px solid #ff7514;">Post settings</h5>
-                <hr><div class="row mt-2">
-                    <div class="col-lg-4">
-                        <label for="" class="form-label blue-color fw-light">Project</label>
-                            <select formControlName="segment" 
-                             class="form-select" aria-label="Default select example">
-                                <option [value]="segemnt.id" *ngFor="let segemnt of segments.getValue()">{{ segemnt.name }}</option>
-                            </select>
-                    </div>
-                    <div class="col-lg-4">
-                        <label for="" class="form-label blue-color fw-light">Production Line</label>
-                            <select formControlName="line"
-                             class="form-select"  aria-label="Default select example">
-                                <option [value]="line.id" *ngFor="let line of productionLines.getValue()">{{ line.name }}</option>
-                            </select>
-                    </div>
-                    <div class="col-lg-4">
-                        <label for="" class="form-label blue-color fw-light d-flex">Packaging process</label>
-                            <select  formControlName="process"
-                            class="form-select" aria-label="Default select example">
-    
-                                <option *ngFor="let pp of packagingProcess | async" [value]="pp.id"
-                                >
-                                    {{ pp.name }}
-                                </option>
-                                <option selected="false" value="0"> new</option>
-                            </select>
-                         
-                    </div>
-                </div>
-                </form>
+  <section class="container">
+    <div class="row mt-3">
+      <form [formGroup]="lineSettings">
+        <h5 class="orange-color fw-light" style="border-left: 5px solid #ff7514;">Post settings</h5>
+        <hr>
+        <div class="row mt-2">
+          <div class="col-lg-4">
+            <label class="form-label blue-color fw-light" for="">Project</label>
+            <select aria-label="Default select example"
+                    class="form-select" formControlName="segment">
+              <option *ngFor="let segemnt of segments.getValue()" [value]="segemnt.id">{{ segemnt.name }}</option>
+            </select>
+          </div>
+          <div class="col-lg-4">
+            <label class="form-label blue-color fw-light" for="">Production Line</label>
+            <select aria-label="Default select example"
+                    class="form-select" formControlName="line">
+              <option *ngFor="let line of productionLines.getValue()" [value]="line.id">{{ line.name }}</option>
+            </select>
+          </div>
+          <div class="col-lg-4">
+            <label class="form-label blue-color fw-light d-flex" for="">Packaging process</label>
+            <select aria-label="Default select example"
+                    class="form-select" formControlName="process">
+
+              <option *ngFor="let pp of packagingProcess | async" [value]="pp.id"
+              >
+                {{ pp.name }}
+              </option>
+              <option selected="false" value="0"> new</option>
+            </select>
+
+          </div>
         </div>
-    </section>
-    
-    
-    <section class="container mt-5">
-        <div class="row mt-3">
-            <form [formGroup]="printresFrom">
-                <h5 class="orange-color fw-light" style="border-left: 5px solid #ff7514;">Printing settings</h5>
-                <hr><div class="row mt-2">
-                    <div class="col-lg-4">
-                        <label for="" class="form-label blue-color fw-light">Default printer</label>
-                            <select 
-                            formControlName="default_printer"
-                            class="form-select" aria-label="Default select example">
-                                <ng-container *ngFor="let printer of printers.getValue() ">
-                                    <option [selected]="getDefaultPrinter === printer" [value]="printer">{{ printer }}</option>
-                                </ng-container>
-                            </select>
-                    </div>
-                    <div class="col-lg-4">
-                        <label for="" class="form-label blue-color fw-light">Lable template</label>
-                            <select disabled="true"  class="form-select" aria-label="Default select example">
-                                <option value="2">Two</option>
-                                <option value="3">Three</option>
-                            </select>
-                    </div>
-               
-                    <div class="col-lg-2">
-                        <br>
-                        <button type="button" (click)="printTestLable()" class="btn btn-outline-secondary mt-1 w-100">Print test</button>
-                    </div>
-                </div>
-                </form>
+      </form>
+    </div>
+  </section>
+
+
+  <section class="container mt-5">
+    <div class="row mt-3">
+      <form [formGroup]="printresFrom">
+        <h5 class="orange-color fw-light" style="border-left: 5px solid #ff7514;">Printing settings</h5>
+        <hr>
+        <div class="row mt-2">
+          <div class="col-lg-4">
+            <label class="form-label blue-color fw-light" for="">Default printer</label>
+            <select
+              aria-label="Default select example"
+              class="form-select" formControlName="default_printer">
+              <ng-container *ngFor="let printer of printers.getValue() ">
+                <option [selected]="getDefaultPrinter === printer" [value]="printer">{{ printer }}</option>
+              </ng-container>
+            </select>
+          </div>
+          <div class="col-lg-4">
+            <label class="form-label blue-color fw-light" for="">Lable template</label>
+            <select aria-label="Default select example" class="form-select" disabled="true">
+              <option value="2">Two</option>
+              <option value="3">Three</option>
+            </select>
+          </div>
+
+          <div class="col-lg-2">
+            <br>
+            <button (click)="printTestLable()" class="btn btn-outline-secondary mt-1 w-100" type="button">Print test
+            </button>
+          </div>
         </div>
-    </section>
+      </form>
+    </div>
+  </section>
 </div>

@@ -1,270 +1,276 @@
-  <div class="container">
-    <div class="row">
-      <mat-tab-group  (selectedTabChange)="onTabChange($event)" mat-stretch-tabs="false" mat-align-tabs="center" >
-        <mat-tab label="Packages"> 
-          <div class="mt-3">
+<div class="container">
+  <div class="row">
+    <mat-tab-group (selectedTabChange)="onTabChange($event)" mat-align-tabs="center" mat-stretch-tabs="false">
+      <mat-tab label="Packages">
+        <div class="mt-3">
           <h5 class="orange-color"> Packges</h5>
-          <input class="mat-elevation-z1 form-control border-warning border-1 my-2" matInput (keyup)="applyFilter1($event)" placeholder="Ex. ium" >
-    
+          <input (keyup)="applyFilter1($event)" class="mat-elevation-z1 form-control border-warning border-1 my-2"
+                 matInput placeholder="Ex. ium">
+
           <div class="mat-elevation-z1">
-            <table mat-table [dataSource]="packagingDataSource" matSort >
+            <table [dataSource]="packagingDataSource" mat-table matSort>
 
               <!-- Checkbox Column -->
               <ng-container matColumnDef="select">
-                <th mat-header-cell *matHeaderCellDef>
+                <th *matHeaderCellDef mat-header-cell>
                   <mat-checkbox (change)="$event ? selectAll() : null"
                                 [checked]="isAllSelected()"
-                                color="primary"
-                                [indeterminate]="isIndeterminate()"></mat-checkbox>
+                                [indeterminate]="isIndeterminate()"
+                                color="primary"></mat-checkbox>
                 </th>
-                <td mat-cell *matCellDef="let row">
-                  <mat-checkbox (click)="$event.stopPropagation()"
-                  color="primary"
-                                (change)="$event ? toggleSelection(row) : null"
-                                [checked]="selection.isSelected(row)">
+                <td *matCellDef="let row" mat-cell>
+                  <mat-checkbox (change)="$event ? toggleSelection(row) : null"
+                                (click)="$event.stopPropagation()"
+                                [checked]="selection.isSelected(row)"
+                                color="primary">
                   </mat-checkbox>
                 </td>
               </ng-container>
 
               <!-- Barcode Column -->
               <ng-container matColumnDef="barcode">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="blue-color"> BarCode </th>
-                <td mat-cell *matCellDef="let row"> {{row.barcode}} </td>
+                <th *matHeaderCellDef class="blue-color" mat-header-cell mat-sort-header> BarCode</th>
+                <td *matCellDef="let row" mat-cell> {{ row.barcode }}</td>
               </ng-container>
 
               <!-- To be Delivered Quantity Column -->
               <ng-container matColumnDef="to_be_delivered_quantity">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="blue-color"> To be Delivered </th>
-                <td mat-cell *matCellDef="let row"> {{row.to_be_delivered_quantity}} </td>
+                <th *matHeaderCellDef class="blue-color" mat-header-cell mat-sort-header> To be Delivered</th>
+                <td *matCellDef="let row" mat-cell> {{ row.to_be_delivered_quantity }}</td>
               </ng-container>
 
               <!-- Delivered Quantity Column -->
               <ng-container matColumnDef="delivered_quantity">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="blue-color"> Delivered </th>
-                <td mat-cell *matCellDef="let row"> {{row.delivered_quantity}} </td>
+                <th *matHeaderCellDef class="blue-color" mat-header-cell mat-sort-header> Delivered</th>
+                <td *matCellDef="let row" mat-cell> {{ row.delivered_quantity }}</td>
               </ng-container>
 
               <!-- Harness Ref Column -->
               <ng-container matColumnDef="harness_ref">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="blue-color"> Harness Ref </th>
-                <td mat-cell *matCellDef="let row"> {{row.harness.ref }} </td>
+                <th *matHeaderCellDef class="blue-color" mat-header-cell mat-sort-header> Harness Ref</th>
+                <td *matCellDef="let row" mat-cell> {{ row.harness.ref }}</td>
               </ng-container>
 
               <!-- Line Name Column -->
               <ng-container matColumnDef="line_name">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="blue-color"> Line Name </th>
-                <td mat-cell *matCellDef="let row"> {{row.line.name}} </td>
+                <th *matHeaderCellDef class="blue-color" mat-header-cell mat-sort-header> Line Name</th>
+                <td *matCellDef="let row" mat-cell> {{ row.line.name }}</td>
               </ng-container>
 
 
-              <ng-container matColumnDef="Progress" >
-                <th mat-header-cell *matHeaderCellDef class="blue-color"> Progress </th>
-                <td mat-cell *matCellDef="let element"
-                    [class]="getPercentageColor((element.delivered_quantity) / element.to_be_delivered_quantity * 100)">
-                  {{( element.delivered_quantity) / element.to_be_delivered_quantity * 100}} %
+              <ng-container matColumnDef="Progress">
+                <th *matHeaderCellDef class="blue-color" mat-header-cell> Progress</th>
+                <td *matCellDef="let element" [class]="getPercentageColor((element.delivered_quantity) / element.to_be_delivered_quantity * 100)"
+                    mat-cell>
+                  {{ (element.delivered_quantity) / element.to_be_delivered_quantity * 100 }} %
                 </td>
               </ng-container>
 
 
               <!-- Action Column -->
               <ng-container matColumnDef="action">
-                <th mat-header-cell *matHeaderCellDef> Action </th>
-                <td mat-cell *matCellDef="let row">
+                <th *matHeaderCellDef mat-header-cell> Action</th>
+                <td *matCellDef="let row" mat-cell>
                   <mat-menu #menu="matMenu">
-                          <button mat-menu-item (click)="deletePackage(row)">Delete</button>
+                    <button (click)="deletePackage(row)" mat-menu-item>Delete</button>
                   </mat-menu>
-                  <button class="btn btn-outline-warning p-1" mat-icon-button [matMenuTriggerFor]="menu">
+                  <button [matMenuTriggerFor]="menu" class="btn btn-outline-warning p-1" mat-icon-button>
                     <mat-icon>more_vert</mat-icon>
                   </button>
                 </td>
               </ng-container>
 
-              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+              <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
 
               <!-- Row shown when there is no matching data. -->
-              <tr class="mat-row" *matNoDataRow>
+              <tr *matNoDataRow class="mat-row">
                 <td class="mat-cell" colspan="7">No data matching the filter</td>
               </tr>
             </table>
-            <mat-paginator #paginator1 [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of packages"></mat-paginator>
+            <mat-paginator #paginator1 [pageSizeOptions]="[5, 10, 25, 100]"
+                           aria-label="Select page of packages"></mat-paginator>
           </div>
-    </div>
-        </mat-tab>
-        <mat-tab label="Harnesses">
-              
-      <div>
-        <!-- Second Table -->
+        </div>
+      </mat-tab>
+      <mat-tab label="Harnesses">
+
+        <div>
+          <!-- Second Table -->
           <!-- <mat-form-field>
             <mat-label>Filter</mat-label>
             <input matInput (keyup)="applyFilter2($event)" placeholder="Ex. ium" #input>
           </mat-form-field> -->
-    
+
           <h5 class="orange-color ">
             Harnesses
           </h5>
-          <input class="mat-elevation-z1   form-control border-warning border-1 my-2" matInput (keyup)="applyFilter2($event)" placeholder="Ex. ium" >
-      
-        <div class="mat-elevation-z1">
-          <table mat-table [dataSource]="harnessesDataSource" matSort>
-      
-            <!-- Checkbox Column -->
-            <ng-container matColumnDef="select">
-              <th mat-header-cell *matHeaderCellDef>
-                <mat-checkbox (change)="$event ? selectAllHarnesses() : null"
-                              [checked]="isAllHarnessesSelected()"
-                              color="primary"
-                              [indeterminate]="isHarnessesIndeterminate()"></mat-checkbox>
-              </th>
-              <td mat-cell *matCellDef="let row">
-                <mat-checkbox (click)="$event.stopPropagation()"
-                              (change)="$event ? toggleHarnessSelection(row) : null"
-                              color="primary"
-                              [checked]="harnessSelection.isSelected(row)">
-                </mat-checkbox>
-              </td>
-            </ng-container>
-      
-            <!-- UUID Column -->
-            <ng-container matColumnDef="uuid">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header class="blue-color"> UUID </th>
-              <td mat-cell *matCellDef="let row"> {{row.uuid}} </td>
-            </ng-container>
-      
-             <!-- Ref hraness Column -->
-             <ng-container matColumnDef="ref">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header class="blue-color"> Referance </th>
-              <td mat-cell *matCellDef="let row"> {{row.harness ? row.harness.ref : "N/A"}} </td>
-            </ng-container>
-            <!-- Box Number Column -->
-            <ng-container matColumnDef="box_number">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header class="blue-color"> Box Number </th>
-              <td mat-cell *matCellDef="let row"> {{row.box_number}} </td>
-            </ng-container>
-      
-            <!-- Status Column -->
-            <ng-container matColumnDef="status">
-              <th mat-header-cell *matHeaderCellDef class="blue-color "> Status </th>
-              <td mat-cell *matCellDef="let element" > 
-                <span style="font-size: 0.7rem" [class]="getStatusClass(element.status)"> 
-                  {{getStatus(element.status)}} </span> 
-                </td>
-              <!-- <th mat-header-cell *matHeaderCellDef mat-sort-header class="blue-color"> Status </th>
-              <td mat-cell *matCellDef="let row"> {{row.status}} </td> -->
-            </ng-container>
-            <!-- date column  -->
-            <ng-container matColumnDef="date" >
-              <th mat-header-cell *matHeaderCellDef mat-sort-header class="blue-color"> Created at   </th>
-              <td mat-cell *matCellDef="let element">  {{element.created_at | date : 'dd/MM/yyyy HH:mm:ss' }}  </td>
-            </ng-container>
-      
-            <!-- Action Column -->
-            <ng-container matColumnDef="action">
-              <th mat-header-cell *matHeaderCellDef> Action </th>
-              <td mat-cell *matCellDef="let row">
-                <mat-menu #menu="matMenu" >
-                  <button mat-menu-item (click)="deleteHarness(row)">Delete</button>
-                </mat-menu>
-                <button class="btn btn-outline-warning p-1" mat-icon-button [matMenuTriggerFor]="menu">
-                  <mat-icon>more_vert</mat-icon>
-                </button>
-              </td>
-            </ng-container>
+          <input (keyup)="applyFilter2($event)" class="mat-elevation-z1   form-control border-warning border-1 my-2"
+                 matInput placeholder="Ex. ium">
 
-            
-            <tr mat-header-row *matHeaderRowDef="harnessesDisplayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: harnessesDisplayedColumns;"></tr>
-      
-            <!-- Row shown when there is no matching data. -->
-            <tr class="mat-row" *matNoDataRow>
-              <td class="mat-cell" colspan="5">No data matching the filter</td>
-            </tr>
-          </table>
-      
-          <mat-paginator #paginator2 [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of harnesses"></mat-paginator>
-        </div>
-      </div>
-        </mat-tab>
-        <mat-tab label="Users"><div class="mat-elevation-z1">
-          <div class="mt-3 ">
-             <!-- <div class="row"> -->
-              <h5 class="orange-color col-9"> Users</h5>
-              <button class="btn text-white  orange-bg-color col-1 btn-sm mx-5" (click)="addUser()"> New user</button>
-             <!-- </div> -->
-
-            <input class="mat-elevation-z1 form-control border-warning border-1 my-2 col-8"
-               matInput
-               (keyup)="applyFilter1($event)"
-               placeholder="Ex. ium" >
-          </div> 
-          <div class="mat-elevation-z8 shadow-sm" >
-            <table mat-table [dataSource]="userDataSource" matSort class="mat-elevation-z8 shadow-sm" >
+          <div class="mat-elevation-z1">
+            <table [dataSource]="harnessesDataSource" mat-table matSort>
 
               <!-- Checkbox Column -->
               <ng-container matColumnDef="select">
-                <th mat-header-cell *matHeaderCellDef>
-                  <mat-checkbox (change)="$event ? selectAll() : null"
-                                [checked]="isAllSelected()"
-                                color="primary"
-                                [indeterminate]="isIndeterminate()"></mat-checkbox>
+                <th *matHeaderCellDef mat-header-cell>
+                  <mat-checkbox (change)="$event ? selectAllHarnesses() : null"
+                                [checked]="isAllHarnessesSelected()"
+                                [indeterminate]="isHarnessesIndeterminate()"
+                                color="primary"></mat-checkbox>
                 </th>
-                <td mat-cell *matCellDef="let row">
-                  <mat-checkbox (click)="$event.stopPropagation()"
-                  color="primary"
-                                (change)="$event ? toggleSelection(row) : null"
-                                [checked]="selection.isSelected(row)">
+                <td *matCellDef="let row" mat-cell>
+                  <mat-checkbox (change)="$event ? toggleHarnessSelection(row) : null"
+                                (click)="$event.stopPropagation()"
+                                [checked]="harnessSelection.isSelected(row)"
+                                color="primary">
                   </mat-checkbox>
                 </td>
               </ng-container>
-  
-              <!-- Barcode Column -->
-              <ng-container matColumnDef="fullName">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="blue-color"> Full-name </th>
-                <td mat-cell *matCellDef="let row"> {{row.username  }} </td>
+
+              <!-- UUID Column -->
+              <ng-container matColumnDef="uuid">
+                <th *matHeaderCellDef class="blue-color" mat-header-cell mat-sort-header> UUID</th>
+                <td *matCellDef="let row" mat-cell> {{ row.uuid }}</td>
               </ng-container>
-  
-              <!-- To be Delivered Quantity Column -->
-              <ng-container matColumnDef="role">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="blue-color">Role </th>
-                <td mat-cell *matCellDef="let row"  [ngClass]="row.role == 'operator' ? 'text-primary':'text-warning'"> {{row.role}} </td>
+
+              <!-- Ref hraness Column -->
+              <ng-container matColumnDef="ref">
+                <th *matHeaderCellDef class="blue-color" mat-header-cell mat-sort-header> Referance</th>
+                <td *matCellDef="let row" mat-cell> {{ row.harness ? row.harness.ref : "N/A" }}</td>
               </ng-container>
-  
-              <!-- Delivered Quantity Column -->
-              <ng-container matColumnDef="matriculate">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="blue-color"> Matriculate </th>
-                <td mat-cell *matCellDef="let row"> {{row.matriculate}} </td>
+              <!-- Box Number Column -->
+              <ng-container matColumnDef="box_number">
+                <th *matHeaderCellDef class="blue-color" mat-header-cell mat-sort-header> Box Number</th>
+                <td *matCellDef="let row" mat-cell> {{ row.box_number }}</td>
               </ng-container>
-  
+
+              <!-- Status Column -->
+              <ng-container matColumnDef="status">
+                <th *matHeaderCellDef class="blue-color " mat-header-cell> Status</th>
+                <td *matCellDef="let element" mat-cell>
+                <span [class]="getStatusClass(element.status)" style="font-size: 0.7rem">
+                  {{ getStatus(element.status) }} </span>
+                </td>
+                <!-- <th mat-header-cell *matHeaderCellDef mat-sort-header class="blue-color"> Status </th>
+                <td mat-cell *matCellDef="let row"> {{row.status}} </td> -->
+              </ng-container>
+              <!-- date column  -->
+              <ng-container matColumnDef="date">
+                <th *matHeaderCellDef class="blue-color" mat-header-cell mat-sort-header> Created at</th>
+                <td *matCellDef="let element" mat-cell> {{ element.created_at | date : 'dd/MM/yyyy HH:mm:ss' }}</td>
+              </ng-container>
+
               <!-- Action Column -->
               <ng-container matColumnDef="action">
-                <th mat-header-cell *matHeaderCellDef> Action </th>
-                <td mat-cell *matCellDef="let row">
+                <th *matHeaderCellDef mat-header-cell> Action</th>
+                <td *matCellDef="let row" mat-cell>
                   <mat-menu #menu="matMenu">
-                          <button mat-menu-item (click)="deleteUser(row)">Delete</button>
+                    <button (click)="deleteHarness(row)" mat-menu-item>Delete</button>
                   </mat-menu>
-                  <button class="btn btn-outline-warning p-1" mat-icon-button [matMenuTriggerFor]="menu">
+                  <button [matMenuTriggerFor]="menu" class="btn btn-outline-warning p-1" mat-icon-button>
                     <mat-icon>more_vert</mat-icon>
                   </button>
                 </td>
               </ng-container>
-  
-              <tr mat-header-row *matHeaderRowDef="userDisplayedColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: userDisplayedColumns;"></tr>
-  
+
+
+              <tr *matHeaderRowDef="harnessesDisplayedColumns" mat-header-row></tr>
+              <tr *matRowDef="let row; columns: harnessesDisplayedColumns;" mat-row></tr>
+
               <!-- Row shown when there is no matching data. -->
-              <tr class="mat-row" *matNoDataRow>
+              <tr *matNoDataRow class="mat-row">
+                <td class="mat-cell" colspan="5">No data matching the filter</td>
+              </tr>
+            </table>
+
+            <mat-paginator #paginator2 [pageSizeOptions]="[5, 10, 25, 100]"
+                           aria-label="Select page of harnesses"></mat-paginator>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab label="Users">
+        <div class="mat-elevation-z1">
+          <div class="mt-3 ">
+            <!-- <div class="row"> -->
+            <h5 class="orange-color col-9"> Users</h5>
+            <button (click)="addUser()" class="btn text-white  orange-bg-color col-1 btn-sm mx-5"> New user</button>
+            <!-- </div> -->
+
+            <input (keyup)="applyFilter1($event)"
+                   class="mat-elevation-z1 form-control border-warning border-1 my-2 col-8"
+                   matInput
+                   placeholder="Ex. ium">
+          </div>
+          <div class="mat-elevation-z8 shadow-sm">
+            <table [dataSource]="userDataSource" class="mat-elevation-z8 shadow-sm" mat-table matSort>
+
+              <!-- Checkbox Column -->
+              <ng-container matColumnDef="select">
+                <th *matHeaderCellDef mat-header-cell>
+                  <mat-checkbox (change)="$event ? selectAll() : null"
+                                [checked]="isAllSelected()"
+                                [indeterminate]="isIndeterminate()"
+                                color="primary"></mat-checkbox>
+                </th>
+                <td *matCellDef="let row" mat-cell>
+                  <mat-checkbox (change)="$event ? toggleSelection(row) : null"
+                                (click)="$event.stopPropagation()"
+                                [checked]="selection.isSelected(row)"
+                                color="primary">
+                  </mat-checkbox>
+                </td>
+              </ng-container>
+
+              <!-- Barcode Column -->
+              <ng-container matColumnDef="fullName">
+                <th *matHeaderCellDef class="blue-color" mat-header-cell mat-sort-header> Full-name</th>
+                <td *matCellDef="let row" mat-cell> {{ row.username }}</td>
+              </ng-container>
+
+              <!-- To be Delivered Quantity Column -->
+              <ng-container matColumnDef="role">
+                <th *matHeaderCellDef class="blue-color" mat-header-cell mat-sort-header>Role</th>
+                <td *matCellDef="let row" [ngClass]="row.role == 'operator' ? 'text-primary':'text-warning'"
+                    mat-cell> {{ row.role }}
+                </td>
+              </ng-container>
+
+              <!-- Delivered Quantity Column -->
+              <ng-container matColumnDef="matriculate">
+                <th *matHeaderCellDef class="blue-color" mat-header-cell mat-sort-header> Matriculate</th>
+                <td *matCellDef="let row" mat-cell> {{ row.matriculate }}</td>
+              </ng-container>
+
+              <!-- Action Column -->
+              <ng-container matColumnDef="action">
+                <th *matHeaderCellDef mat-header-cell> Action</th>
+                <td *matCellDef="let row" mat-cell>
+                  <mat-menu #menu="matMenu">
+                    <button (click)="deleteUser(row)" mat-menu-item>Delete</button>
+                  </mat-menu>
+                  <button [matMenuTriggerFor]="menu" class="btn btn-outline-warning p-1" mat-icon-button>
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr *matHeaderRowDef="userDisplayedColumns" mat-header-row></tr>
+              <tr *matRowDef="let row; columns: userDisplayedColumns;" mat-row></tr>
+
+              <!-- Row shown when there is no matching data. -->
+              <tr *matNoDataRow class="mat-row">
                 <td class="mat-cell" colspan="7">No data matching the filter</td>
               </tr>
             </table>
           </div>
-         
-          <mat-paginator #paginator3 [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of packages"></mat-paginator>
+
+          <mat-paginator #paginator3 [pageSizeOptions]="[5, 10, 25, 100]"
+                         aria-label="Select page of packages"></mat-paginator>
         </div>
       </mat-tab>
-      </mat-tab-group>
-      
-    
+    </mat-tab-group>
 
-      
-    </div>
+
   </div>
+</div>

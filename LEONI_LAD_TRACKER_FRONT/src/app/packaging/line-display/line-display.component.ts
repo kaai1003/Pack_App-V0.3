@@ -1,30 +1,29 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BaseChartDirective } from "ng2-charts";
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {BaseChartDirective} from "ng2-charts";
 import Chart from 'chart.js/auto';
-import { MatCardModule } from "@angular/material/card";
-import { Router, RouterOutlet } from "@angular/router";
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { HourlyEfficiency, LineDashboardService } from '../../services/line.dashboard';
-import { MatDialog } from '@angular/material/dialog';
-import { LineDisplayDialogComponent } from '../line-display-dialog/line-display-dialog.component';
-import { CountHourLineDto, CountBoxPerHourLineDto, HourProduitsDTO, refQuantityDto, BoxCount } from '../../dtos/Line.dashboard.dto';
-import { StorageService } from '../../services/storage.service';
-import { SegmentService } from '../../services/segment.service';
-import { ProductionLineService } from '../../services/production.line.service';
-import { BehaviorSubject } from 'rxjs';
+import {MatCardModule} from "@angular/material/card";
+import {Router, RouterOutlet} from "@angular/router";
+import {CommonModule} from '@angular/common';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {HourlyEfficiency, LineDashboardService} from '../../services/line.dashboard';
+import {MatDialog} from '@angular/material/dialog';
+import {LineDisplayDialogComponent} from '../line-display-dialog/line-display-dialog.component';
+import {
+  BoxCount, CountBoxPerHourLineDto, CountHourLineDto, HourProduitsDTO, refQuantityDto
+} from '../../dtos/Line.dashboard.dto';
+import {StorageService} from '../../services/storage.service';
+import {SegmentService} from '../../services/segment.service';
+import {ProductionLineService} from '../../services/production.line.service';
+import {BehaviorSubject} from 'rxjs';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+
 Chart.register(ChartDataLabels);
 
 
 @Component({
   selector: 'app-line-display',
   standalone: true,
-  imports: [
-    BaseChartDirective,
-    MatCardModule, ReactiveFormsModule,
-    RouterOutlet, CommonModule
-  ],
+  imports: [BaseChartDirective, MatCardModule, ReactiveFormsModule, RouterOutlet, CommonModule],
   templateUrl: './line-display.component.html',
   styleUrl: './line-display.component.css'
 })
@@ -36,8 +35,7 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
   countOfPackagePerHour: CountBoxPerHourLineDto[] = [];
   hourProduits: HourProduitsDTO = new HourProduitsDTO(0, 0, 0, 0);
   filterForm: FormGroup = this.formBuilder.group({
-    from: [this.formatDate(new Date()), Validators.required],
-    to: [this.formatDate(new Date()), Validators.required]
+    from: [this.formatDate(new Date()), Validators.required], to: [this.formatDate(new Date()), Validators.required]
   });
   countFxPerRef: refQuantityDto[] = [];
   currentTime: Date = new Date();
@@ -46,15 +44,9 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
   line: BehaviorSubject<string> = new BehaviorSubject<string>("")
   project: BehaviorSubject<string> = new BehaviorSubject<string>("")
   efficiencyPerHour: BehaviorSubject<HourlyEfficiency[]> = new BehaviorSubject<HourlyEfficiency[]>([]);
-  constructor(
-    private formBuilder: FormBuilder,
-    private lineDashboardService: LineDashboardService,
-    public dialog: MatDialog,
-    public storageService: StorageService,
-    public router: Router,
-    private SegemntService: SegmentService,
-    private productionLineService: ProductionLineService
-  ) { }
+
+  constructor(private formBuilder: FormBuilder, private lineDashboardService: LineDashboardService, public dialog: MatDialog, public storageService: StorageService, public router: Router, private SegemntService: SegmentService, private productionLineService: ProductionLineService) {
+  }
 
   ngOnInit() {
     this.setDefaultDates()
@@ -72,13 +64,12 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
     }, 1000);
 
 
-
   }
 
   reloadCurrentPage() {
-    this.router.navigateByUrl('/packaging/report', { skipLocationChange: true }).then(() => {
+    this.router.navigateByUrl('/packaging/report', {skipLocationChange: true}).then(() => {
       this.router.navigate([this.router.url]).then(() => {
-        // Set the page to 
+        // Set the page to
         this.initHourlyQuantityChart()
         this.countFxPerHour
         this.updateCharts()
@@ -141,12 +132,9 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
     }
 
     this.filterForm.patchValue({
-      from: this.formatDate(fromDate),
-      to: this.formatDate(toDate),
-      // shift: this.getCurrentShift(currentHour)
+      from: this.formatDate(fromDate), to: this.formatDate(toDate), // shift: this.getCurrentShift(currentHour)
     });
   }
-
 
 
   formatDate(date: any): string {
@@ -162,104 +150,76 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 
+   *
    */
   getInitData(): void {
     const filters = {
       from: this.formatDate(this.filterForm.get('from')?.value),
       to: this.formatDate(this.filterForm.get('to')?.value),
       temps_game: this.storageService.getItem('line_disply_rangeTime'),
-      vsm:this.storageService.getItem('availible_operators')
+      vsm: this.storageService.getItem('availible_operators')
     }
 
-    this.lineDashboardService.getTotalQuantity(filters).subscribe(
-      (data: any) => {
-        this.totalQuantity = data.total_quantity;
-        // Update other data and charts as needed
-        this.updateCharts();
-      },
-      (error) => {
-        console.error('Error fetching total quantity:', error);
-      }
-    );
+    this.lineDashboardService.getTotalQuantity(filters).subscribe((data: any) => {
+      this.totalQuantity = data.total_quantity;
+      // Update other data and charts as needed
+      this.updateCharts();
+    }, (error) => {
+      console.error('Error fetching total quantity:', error);
+    });
 
-    this.lineDashboardService.getBoxCount(filters).subscribe(
-      (data: BoxCount) => {
-        this.countPackages = data.box_count;
-        // Update other data and charts as needed
-        this.updateCharts();
-      },
-      (error) => {
-        console.error('Error fetching total quantity:', error);
-      }
-    );
+    this.lineDashboardService.getBoxCount(filters).subscribe((data: BoxCount) => {
+      this.countPackages = data.box_count;
+      // Update other data and charts as needed
+      this.updateCharts();
+    }, (error) => {
+      console.error('Error fetching total quantity:', error);
+    });
 
 
-    this.lineDashboardService.getCountOfPackageByHour(filters).subscribe(
-      (data: any) => {
-        this.countOfPackagePerHour = data;
-        // Update other data and charts as needed
-        this.updateCharts();
-      },
-      (error) => {
-        console.error('Error fetching total quantity:', error);
-      }
-    );
+    this.lineDashboardService.getCountOfPackageByHour(filters).subscribe((data: any) => {
+      this.countOfPackagePerHour = data;
+      // Update other data and charts as needed
+      this.updateCharts();
+    }, (error) => {
+      console.error('Error fetching total quantity:', error);
+    });
 
-    this.lineDashboardService.getHourProduitsDTO(filters).subscribe(
-      (data: any) => {
-        this.hourProduits = data;
-        // Update other data and charts as needed
-        this.updateCharts();
-      },
-      (error) => {
-        console.error('Error fetching total quantity:', error);
-      }
-    )
+    this.lineDashboardService.getHourProduitsDTO(filters).subscribe((data: any) => {
+      this.hourProduits = data;
+      // Update other data and charts as needed
+      this.updateCharts();
+    }, (error) => {
+      console.error('Error fetching total quantity:', error);
+    })
 
 
-    this.lineDashboardService.getQuantityByHour(filters).subscribe(
-      (data: any) => {
-        this.countFxPerHour = data
-        this.updateCharts();
-      }
-      ,
-      (error) => {
-        console.error('Error fetching hourly quantity:', error);
-      }
-    );
+    this.lineDashboardService.getQuantityByHour(filters).subscribe((data: any) => {
+      this.countFxPerHour = data
+      this.updateCharts();
+    }, (error) => {
+      console.error('Error fetching hourly quantity:', error);
+    });
 
-    this.lineDashboardService.getCountByCodeFournisseur(filters).subscribe(
-      (data: any) => {
-        this.countFxPerRef = data
-        this.updateCharts();
-      }
-      ,
-      (error) => {
-        console.error('Error fetching hourly quantity:', error);
-      }
-    )
+    this.lineDashboardService.getCountByCodeFournisseur(filters).subscribe((data: any) => {
+      this.countFxPerRef = data
+      this.updateCharts();
+    }, (error) => {
+      console.error('Error fetching hourly quantity:', error);
+    })
 
-    this.lineDashboardService.getInProgressQantity(filters).subscribe(
-      (data: any) => {
-        this.InProgress = data.total_quantity
-        this.updateCharts();
-      }
-      ,
-      (error) => {
-        console.error(':', error);
-      }
-    )
-    this.lineDashboardService.getEfficiencyByHour(filters).subscribe(
-      (data: any) => {
-        this.efficiencyPerHour.next(data)
-        this.updateCharts();
-      }
-      ,
-      (error) => {
-        console.error(':', error);
-      }
-    )
+    this.lineDashboardService.getInProgressQantity(filters).subscribe((data: any) => {
+      this.InProgress = data.total_quantity
+      this.updateCharts();
+    }, (error) => {
+      console.error(':', error);
+    })
+    this.lineDashboardService.getEfficiencyByHour(filters).subscribe((data: any) => {
+      this.efficiencyPerHour.next(data)
+      this.updateCharts();
+    }, (error) => {
+      console.error(':', error);
+    })
 
     setTimeout(() => {
       this.onFilter();
@@ -277,9 +237,10 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
     this.updateEffecenyPerHoureChart()
     // Other chart updates
   }
+
   /**
    * this function provid us to calculate efficiency
-   * @returns 
+   * @returns
    */
   calculateEfficiency(): number {
     // Implement efficiency calculation logic based on totalQuantity and any other relevant data
@@ -305,43 +266,28 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
   initHourlyQuantityChart(): void {
     const ctx = document.getElementById('hourlyQuantityChart') as HTMLCanvasElement;
     new Chart(ctx, {
-      type: 'bar',
-      data: {
+      type: 'bar', data: {
         labels: [], // Provide your labels
         datasets: [{
-          label: 'Hourly Quantity',
-          data: [10, 20, 30, 40], // Sample data
-          borderColor: '#ff7514',
-          backgroundColor: '#ff7514',
-          borderWidth: 1
+          label: 'Hourly Quantity', data: [10, 20, 30, 40], // Sample data
+          borderColor: '#ff7514', backgroundColor: '#ff7514', borderWidth: 1
         }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        animation: {
+      }, options: {
+        responsive: true, maintainAspectRatio: true, animation: {
           duration: 0,
-        },
-        plugins: {
+        }, plugins: {
           legend: {
             position: 'top'
-          },
-          // Adding label plugin here
+          }, // Adding label plugin here
           datalabels: {
-            display: true,
-            align: 'center',
-            color: 'oklch(0.28 0.1 255.67)',
-            font: {
-              size:16,
-              weight: 'bold'
-            },
-            formatter: function (value:any) {
+            display: true, align: 'center', color: 'oklch(0.28 0.1 255.67)', font: {
+              size: 16, weight: 'bold'
+            }, formatter: function (value: any) {
               return value; // Return value to show inside the chart
             }
           }
         }
-      },
-      plugins: [ChartDataLabels] // Registering the Chart.js DataLabels plugin
+      }, plugins: [ChartDataLabels] // Registering the Chart.js DataLabels plugin
     });
   }
 
@@ -366,7 +312,7 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
     } while (hourCout < 8)
 
     this.countFxPerHour = postedHours
-   
+
     const chart = Chart.getChart('hourlyQuantityChart') as Chart;
     chart.data.labels = this.countFxPerHour.map((item: any, index) => item.hour + 'h -> ' + (item.hour + 1) + 'h');
     // chart.data.datasets[0].data = this.countFxPerHour.map((item: any) => item.total_quantity);
@@ -376,38 +322,35 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
       borderColor: '#ff7614a4',
       backgroundColor: '#ff7614a4',
       order: 2
-  }, {
+    }, {
       label: 'Target per hour',
-      data: [...this.countFxPerHour.map((item: any) => targetPerHour),20],
+      data: [...this.countFxPerHour.map((item: any) => targetPerHour), 20],
       type: 'line',
-       borderColor: 'rgba( 25, 135, 84, 1 )',
-          backgroundColor: 'rgba( 25, 135, 84, 1 )',
-      // this dataset is drawn on top
+      borderColor: 'rgba( 25, 135, 84, 1 )',
+      backgroundColor: 'rgba( 25, 135, 84, 1 )', // this dataset is drawn on top
       order: 1
-  }],
-  // labels: ['January', 'February', 'March', 'April']
+    }], // labels: ['January', 'February', 'March', 'April']
 
 
-    chart.update();
+      chart.update();
 
   }
 
 
   openDialog(): void {
     this.dialog.open(LineDisplayDialogComponent, {
-      width: '50%',
-      data: { /* pass any data here if needed */ }
+      width: '50%', data: { /* pass any data here if needed */}
     });
   }
 
   getEcartColorAndArrow(): { colorClass: string, arrow: string } {
     const ecart = this.calculateExpected() - this.totalQuantity;
     if (ecart > 0) {
-      return { colorClass: 'text-danger fw-bold', arrow: '↓' };
+      return {colorClass: 'text-danger fw-bold', arrow: '↓'};
     } else if (ecart < 0) {
-      return { colorClass: 'text-success fw-bold', arrow: '↑' };
+      return {colorClass: 'text-success fw-bold', arrow: '↑'};
     } else {
-      return { colorClass: '', arrow: '' }; // Default or no change needed
+      return {colorClass: '', arrow: ''}; // Default or no change needed
     }
   }
 
@@ -415,76 +358,65 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
   initEffecenyPerHoureChart(): void {
     const ctx = document.getElementById('effeciencyChart') as HTMLCanvasElement;
     new Chart(ctx, {
-      type: 'line',
-      data: {
+      type: 'line', data: {
         labels: ["Efficiency Per Hour"], // Provide your labels
         datasets: [{
           data: [], // Provide your data
-          borderWidth: 6,
-          fill: false,
-          borderColor: 'oklch(0.28 0.1 255.67)',
-          tension: 0.1
+          borderWidth: 6, fill: false, borderColor: 'oklch(0.28 0.1 255.67)', tension: 0.1
         }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        plugins: {
+      }, options: {
+        responsive: true, maintainAspectRatio: true, plugins: {
           legend: {
             position: 'top',
-          },
-          // Adding label plugin here
+          }, // Adding label plugin here
           datalabels: {
-            display: true,
-            align: 'top',
-            color: '#ff7514',
-            font: {
-              size:16,
-              weight: 'bold'
-            },
-            formatter: function (value:any) {
+            display: true, align: 'top', color: '#ff7514', font: {
+              size: 16, weight: 'bold'
+            }, formatter: function (value: any) {
               return value.toFixed(2); // Format the value to 2 decimal places
             }
           }
         }
-      },
-      plugins: [ChartDataLabels] // Registering the Chart.js DataLabels plugin
+      }, plugins: [ChartDataLabels] // Registering the Chart.js DataLabels plugin
     });
   }
-  
+
   /**
-   * 
+   *
    */
   updateEffecenyPerHoureChart(): void {
     const ctx = document.getElementById('effeciencyChart') as HTMLCanvasElement;
     const chart = Chart.getChart(ctx);
     if (chart) {
       chart.data.labels = this.efficiencyPerHour.getValue().map(item => item.hour + 'h -> ' + (item.hour + 1) + 'h');
-      chart.data.datasets[0].data = [...this.efficiencyPerHour.getValue().map(item => item.efficiency),100];
-      chart.data.datasets[0].label ="Efficiency"
+      chart.data.datasets[0].data = [...this.efficiencyPerHour.getValue().map(item => item.efficiency), 100];
+      chart.data.datasets[0].label = "Efficiency"
       chart.update();
     }
   }
+
   /**
-   * print the report 
+   * print the report
    */
   printReport(): void {
     window.print()
   }
+
   /**
-   * 
-   * @returns target in line 
+   *
+   * @returns target in line
    */
   getOpbjectif(): number {
     // const rangeTime = this.storageService.getItem("rangeTime")
-    // const operators = this.storageService.getItem("operatores") 
+    // const operators = this.storageService.getItem("operatores")
     const gole = this.storageService.getItem("line_disply_target") ? this.storageService.getItem("line_disply_target") : 0;
     // let objectif = (operators * this.hourProduits.posted_hours) / rangeTime
     return parseInt(gole)
   }
+
   /**
-   * 
-   * @returns expected of to delever 
+   *
+   * @returns expected of to delever
    */
   calculateExpected() {
     let start = new Date(this.formatDate(this.filterForm.get('from')?.value))

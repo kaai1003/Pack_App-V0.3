@@ -1,73 +1,41 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatMenuModule } from '@angular/material/menu';
-import { SelectionModel } from '@angular/cdk/collections';
-import { PackagingBoxModel } from '../../models/packaging-box.model';
-import { ProductionHarnessModel } from '../../models/production.harness.model';
-import { PackagingBoxService } from '../../services/packaging.box.service';
-import { ProdHarnessService } from '../../services/prod-harness.service';
-import { catchError, of, tap } from 'rxjs';
-import { MatFormField, MatFormFieldModule, MatLabel } from '@angular/material/form-field';
-import { MatIcon } from '@angular/material/icon';
-import { CommonModule } from '@angular/common';
+import {AfterViewInit, Component, ViewChild} from '@angular/core';
+import {MatTableDataSource, MatTableModule} from '@angular/material/table';
+import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
+import {MatSort, MatSortModule} from '@angular/material/sort';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatMenuModule} from '@angular/material/menu';
+import {SelectionModel} from '@angular/cdk/collections';
+import {PackagingBoxModel} from '../../models/packaging-box.model';
+import {ProductionHarnessModel} from '../../models/production.harness.model';
+import {PackagingBoxService} from '../../services/packaging.box.service';
+import {ProdHarnessService} from '../../services/prod-harness.service';
+import {catchError, of, tap} from 'rxjs';
+import {MatFormField, MatFormFieldModule, MatLabel} from '@angular/material/form-field';
+import {MatIcon} from '@angular/material/icon';
+import {CommonModule} from '@angular/common';
 import {MatTabChangeEvent, MatTabsModule} from '@angular/material/tabs';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { UserModel } from '../../models/user.model';
-import { UserService } from '../../services/user.service';
-import { Dialog } from '@angular/cdk/dialog';
-import { AddNewUserDialogComponent } from '../add-new-user-dialog/add-new-user-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {UserModel} from '../../models/user.model';
+import {UserService} from '../../services/user.service';
+import {Dialog} from '@angular/cdk/dialog';
+import {AddNewUserDialogComponent} from '../add-new-user-dialog/add-new-user-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
+
 @Component({
   selector: 'app-packaging-data',
   standalone: true,
-  imports: [
-    MatCheckboxModule,
-    MatMenuModule,
-    MatTableModule,
-    MatSortModule,
-    MatFormFieldModule,
-    MatLabel,
-    MatIcon,
-    CommonModule,
-    MatPaginatorModule,
-    MatMenuModule,MatTabsModule
-  ],
+  imports: [MatCheckboxModule, MatMenuModule, MatTableModule, MatSortModule, MatFormFieldModule, MatLabel, MatIcon, CommonModule, MatPaginatorModule, MatMenuModule, MatTabsModule],
   templateUrl: './packaging-data.component.html',
   styleUrls: ['./packaging-data.component.css'],
 })
 export class PackagingDataComponent implements AfterViewInit {
-[x: string]: any;
-  displayedColumns: string[] = [
-    'select',
-    'barcode',
-    'to_be_delivered_quantity',
-    'delivered_quantity',
-    'harness_ref',
-    'line_name',
-    'Progress',
-    'action'
-  ];
+  [x: string]: any;
 
-  harnessesDisplayedColumns: string[] = [
-    'select',
-    'uuid',
-    'ref',
-    'box_number',
-    'status',
-    'date',
-    'action',
-  ];
+  displayedColumns: string[] = ['select', 'barcode', 'to_be_delivered_quantity', 'delivered_quantity', 'harness_ref', 'line_name', 'Progress', 'action'];
 
-  userDisplayedColumns: string[] =[
-    'select',
-    'fullName',
-    'matriculate',
-    'role',
-    'action'
-  ]
+  harnessesDisplayedColumns: string[] = ['select', 'uuid', 'ref', 'box_number', 'status', 'date', 'action',];
+
+  userDisplayedColumns: string[] = ['select', 'fullName', 'matriculate', 'role', 'action']
   packagingDataSource = new MatTableDataSource<PackagingBoxModel>([]);
   harnessesDataSource = new MatTableDataSource<ProductionHarnessModel>([]);
   userDataSource = new MatTableDataSource<UserModel>([]);
@@ -85,37 +53,25 @@ export class PackagingDataComponent implements AfterViewInit {
   @ViewChild('sort3') sort3!: MatSort;
 
 
-  constructor(
-    private packagesService: PackagingBoxService,
-    private prodHarnessesService: ProdHarnessService,
-    private userService: UserService,
-    private snakBar: MatSnackBar,
-    private dialogRef: MatDialog
-  ) {
-        this.packagesService.getAllPackagingBoxes().pipe(
-          tap((packages) => {
-            this.packagingDataSource.data = packages;
-            this.packagingDataSource.paginator = this.paginator1;
-            this.packagingDataSource.sort = this.sort1;
-          })
-        ).subscribe();
-        
-        this.prodHarnessesService.getAllProdHarnesses().pipe(
-          tap((harnesses) => {
-            this.harnessesDataSource.data = harnesses;
-            this.harnessesDataSource.paginator = this.paginator2;
-            this.harnessesDataSource.sort = this.sort2;
-          })
-        ).subscribe();
+  constructor(private packagesService: PackagingBoxService, private prodHarnessesService: ProdHarnessService, private userService: UserService, private snakBar: MatSnackBar, private dialogRef: MatDialog) {
+    this.packagesService.getAllPackagingBoxes().pipe(tap((packages) => {
+      this.packagingDataSource.data = packages;
+      this.packagingDataSource.paginator = this.paginator1;
+      this.packagingDataSource.sort = this.sort1;
+    })).subscribe();
 
-        this.userService.getAllUsers().pipe(
-          tap((users) =>{
-            this.userDataSource.data = users;
-            this.userDataSource.paginator = this.paginator3;
-            this.userDataSource.sort = this.sort3;
-          })
-        ).subscribe()
-      }
+    this.prodHarnessesService.getAllProdHarnesses().pipe(tap((harnesses) => {
+      this.harnessesDataSource.data = harnesses;
+      this.harnessesDataSource.paginator = this.paginator2;
+      this.harnessesDataSource.sort = this.sort2;
+    })).subscribe();
+
+    this.userService.getAllUsers().pipe(tap((users) => {
+      this.userDataSource.data = users;
+      this.userDataSource.paginator = this.paginator3;
+      this.userDataSource.sort = this.sort3;
+    })).subscribe()
+  }
 
   ngAfterViewInit() {
     // Initialize the first table features
@@ -123,7 +79,7 @@ export class PackagingDataComponent implements AfterViewInit {
       this.packagingDataSource.paginator = this.paginator1;
       this.packagingDataSource.sort = this.sort1;
     }
-  
+
     // Initialize the second table features
     if (this.harnessesDataSource) {
       this.harnessesDataSource.paginator = this.paginator2;
@@ -134,7 +90,7 @@ export class PackagingDataComponent implements AfterViewInit {
       this.userDataSource.sort = this.sort3;
     }
   }
-  
+
 
   initializePackagingTableFeatures() {
     if (this.packagingDataSource) {
@@ -201,19 +157,11 @@ export class PackagingDataComponent implements AfterViewInit {
   }
 
   selectAll() {
-    this.isAllSelected()
-      ? this.selection.clear()
-      : this.packagingDataSource.data.forEach((row) =>
-          this.selection.select(row)
-        );
+    this.isAllSelected() ? this.selection.clear() : this.packagingDataSource.data.forEach((row) => this.selection.select(row));
   }
 
   selectAllHarnesses() {
-    this.isAllHarnessesSelected()
-      ? this.harnessSelection.clear()
-      : this.harnessesDataSource.data.forEach((row) =>
-          this.harnessSelection.select(row)
-        );
+    this.isAllHarnessesSelected() ? this.harnessSelection.clear() : this.harnessesDataSource.data.forEach((row) => this.harnessSelection.select(row));
   }
 
   edit(row: PackagingBoxModel) {
@@ -222,14 +170,12 @@ export class PackagingDataComponent implements AfterViewInit {
   }
 
   deletePackage(row: PackagingBoxModel) {
-    this.packagesService.deletePackagingBox(row.id).pipe(
-      tap(value => {
-        this.snakBar.open(`${row.barcode} is deleted with success`, "OK", {duration:2000})
-        const filtredData = this.packagingDataSource.data.filter(data => data.id != row.id)
-        this.packagingDataSource.data =  filtredData
-      })
-    ).subscribe()
-  
+    this.packagesService.deletePackagingBox(row.id).pipe(tap(value => {
+      this.snakBar.open(`${row.barcode} is deleted with success`, "OK", {duration: 2000})
+      const filtredData = this.packagingDataSource.data.filter(data => data.id != row.id)
+      this.packagingDataSource.data = filtredData
+    })).subscribe()
+
   }
 
   editHarness(row: ProductionHarnessModel) {
@@ -238,17 +184,14 @@ export class PackagingDataComponent implements AfterViewInit {
   }
 
   deleteHarness(row: ProductionHarnessModel) {
-    this.prodHarnessesService.deleteHarness(row).pipe(
-      tap((respense) => {
-        const filtredData = this.harnessesDataSource.data.filter(data => data.id != row.id)
-        this.harnessesDataSource.data =  filtredData
-         this.snakBar.open(respense.message,"Close",{duration:300})
-        }),
-      catchError(error => {
-        this.snakBar.open(error.error,"Close",{duration:300})
-        return of(null); 
-      })
-    ).subscribe()
+    this.prodHarnessesService.deleteHarness(row).pipe(tap((respense) => {
+      const filtredData = this.harnessesDataSource.data.filter(data => data.id != row.id)
+      this.harnessesDataSource.data = filtredData
+      this.snakBar.open(respense.message, "Close", {duration: 300})
+    }), catchError(error => {
+      this.snakBar.open(error.error, "Close", {duration: 300})
+      return of(null);
+    })).subscribe()
     console.log('Delete harness', row);
   }
 
@@ -265,21 +208,20 @@ export class PackagingDataComponent implements AfterViewInit {
   }
 
 
-
-   /**
+  /**
    * this function transform the status numbers to string status
    * @param status
    */
-   getStatus(status: number): string {
+  getStatus(status: number): string {
 
-    switch (status){
+    switch (status) {
       case 1:
         return "picked"
 
-    case 2:
-      return "fulfilled"
+      case 2:
+        return "fulfilled"
 
-    case -1:
+      case -1:
         return "rejected"
 
     }
@@ -289,7 +231,7 @@ export class PackagingDataComponent implements AfterViewInit {
   getStatusClass(status: number): string {
 
 
-    switch (status){
+    switch (status) {
       case 0:
         return "btn btn-info btn-sm text-white rounded-5"
       case 1:
@@ -323,20 +265,19 @@ export class PackagingDataComponent implements AfterViewInit {
     }
   }
 
-  addUser(){
+  addUser() {
     this.dialogRef.open(AddNewUserDialogComponent, {
-      width: '50%',
-      data: { /* pass any data here if needed */ }
+      width: '50%', data: { /* pass any data here if needed */}
     });
   }
 
-  deleteUser(row: UserModel){
+  deleteUser(row: UserModel) {
     const index = this.userDataSource.data.indexOf(row);
     this.userService.deleteUser(row.id).subscribe(date => {
       if (index >= 0) {
         this.userDataSource.data.splice(index, 1);  // Remove from data array
         this.userDataSource = new MatTableDataSource(this.userDataSource.data);  // Reassign dataSource to refresh table
-        this.snakBar.open('user '+ row.username +' deleted',"OK",{duration:2000})
+        this.snakBar.open('user ' + row.username + ' deleted', "OK", {duration: 2000})
       }
     })
   }

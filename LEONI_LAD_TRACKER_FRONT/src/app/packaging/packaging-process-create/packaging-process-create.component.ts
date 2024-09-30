@@ -1,40 +1,31 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatCardModule } from "@angular/material/card";
-import { MatButtonModule } from "@angular/material/button";
-import { MatAccordion, MatExpansionModule } from "@angular/material/expansion";
-import { MatIconModule } from "@angular/material/icon";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatInputModule } from "@angular/material/input";
-import { MatCheckbox, MatCheckboxChange } from "@angular/material/checkbox";
-import { PostService } from "../../services/post.service";
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {MatCardModule} from "@angular/material/card";
+import {MatButtonModule} from "@angular/material/button";
+import {MatAccordion, MatExpansionModule} from "@angular/material/expansion";
+import {MatIconModule} from "@angular/material/icon";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatInputModule} from "@angular/material/input";
+import {MatCheckbox, MatCheckboxChange} from "@angular/material/checkbox";
+import {PostService} from "../../services/post.service";
 import {BehaviorSubject, concatMap, tap} from "rxjs";
-import { PostModel } from "../../models/post.model";
-import { CommonModule } from "@angular/common";
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
-import { PackagingStepDTO } from "../../dtos/create.packaging.step.dto";
-import { CdkDragDrop, DragDropModule, moveItemInArray } from "@angular/cdk/drag-drop";
-import { MatBadgeModule } from "@angular/material/badge";
+import {PostModel} from "../../models/post.model";
+import {CommonModule} from "@angular/common";
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {PackagingStepDTO} from "../../dtos/create.packaging.step.dto";
+import {CdkDragDrop, DragDropModule, moveItemInArray} from "@angular/cdk/drag-drop";
+import {MatBadgeModule} from "@angular/material/badge";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {HarnessService} from "../../services/harness.service";
 import {PackagingProcessService} from "../../services/packaging-proccess.service";
 import {PackagingStepService} from "../../services/packaging.step";
-import { SegmentService } from '../../services/segment.service';
-import { SegmentModul } from '../../models/segment.model';
-import { Router } from '@angular/router';
+import {SegmentService} from '../../services/segment.service';
+import {SegmentModul} from '../../models/segment.model';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-packaging-process-create',
   standalone: true,
-  imports: [MatCardModule, MatButtonModule,
-    MatExpansionModule,
-    MatIconModule,
-    DragDropModule,
-    MatFormFieldModule,
-    MatInputModule,
-    CommonModule,
-    ReactiveFormsModule,
-    MatCheckbox, MatBadgeModule
-  ],
+  imports: [MatCardModule, MatButtonModule, MatExpansionModule, MatIconModule, DragDropModule, MatFormFieldModule, MatInputModule, CommonModule, ReactiveFormsModule, MatCheckbox, MatBadgeModule],
   templateUrl: './packaging-process-create.component.html',
   styleUrls: ['./packaging-process-create.component.css']
 })
@@ -44,7 +35,7 @@ export class PackagingProcessCreateComponent implements OnInit {
   @ViewChild(MatAccordion) accordion!: MatAccordion;
   processForm: FormGroup;
   packagingProcessForm: FormGroup;
-  families:BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  families: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   packaginProccesId: BehaviorSubject<number> = new BehaviorSubject(0)
   segments: BehaviorSubject<SegmentModul[]> = new BehaviorSubject<SegmentModul[]>([])
 
@@ -57,18 +48,10 @@ export class PackagingProcessCreateComponent implements OnInit {
    * @param packagingProcessService
    * @param packagingStepService
    */
-  constructor(private postService: PostService,
-              private formBuilder: FormBuilder,
-              private snackBar: MatSnackBar,
-              private segmentService: SegmentService,
-              private harnessService: HarnessService,
-              private router: Router,
-              private packagingProcessService:PackagingProcessService,
-              private packagingStepService: PackagingStepService ) {
+  constructor(private postService: PostService, private formBuilder: FormBuilder, private snackBar: MatSnackBar, private segmentService: SegmentService, private harnessService: HarnessService, private router: Router, private packagingProcessService: PackagingProcessService, private packagingStepService: PackagingStepService) {
     this.processForm = this.formBuilder.group({});
     this.packagingProcessForm = this.formBuilder.group({
-      segment:['', Validators.required],
-      processName:["", Validators.required],
+      segment: ['', Validators.required], processName: ["", Validators.required],
     });
   }
 
@@ -76,9 +59,8 @@ export class PackagingProcessCreateComponent implements OnInit {
    *
    */
   ngOnInit(): void {
-   
-   this.segmentService.getAllSegment().pipe(
-    tap((segments)=>{
+
+    this.segmentService.getAllSegment().pipe(tap((segments) => {
       this.segments.next(segments)
     })).subscribe()
 
@@ -87,12 +69,10 @@ export class PackagingProcessCreateComponent implements OnInit {
       posts.forEach(post => {
         post.fields.forEach(field => {
           this.processForm.addControl(post.name + "#" + field.name + '#' + 'pre-fix', this.formBuilder.control({
-            value: '',
-            disabled: true
-          }, ));
+            value: '', disabled: true
+          },));
           this.processForm.addControl(post.name + "#" + field.name + '#' + 'img', this.formBuilder.control({
-            value: '',
-            disabled: true
+            value: '', disabled: true
           }, [Validators.required, Validators.minLength(2)]));
           this.processForm.addControl(post.name + "#" + field.name, this.formBuilder.control(false));
         });
@@ -182,19 +162,19 @@ export class PackagingProcessCreateComponent implements OnInit {
     if (input.files && input.files.length) {
       const file = input.files[0];
       const reader = new FileReader();
-  
+
       reader.onload = () => {
         // Base64-encoded image result
         const base64Image = reader.result as string;
-  
+
         // Set the base64-encoded image in the form control
         this.processForm.get(fieldName)?.setValue(base64Image);
       };
-  
+
       reader.readAsDataURL(file); // Read file as base64
     }
   }
-  
+
 
   /**
    *
@@ -203,60 +183,38 @@ export class PackagingProcessCreateComponent implements OnInit {
   OnSubmit() {
     if (this.processForm.invalid || this.packagingProcessForm.invalid) {
       this.snackBar.open('Some fields are invalid. Please check.', 'Close', {
-        duration: 3000,
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom',
-        panelClass: 'danger-snackBar'
+        duration: 3000, horizontalPosition: 'center', verticalPosition: 'bottom', panelClass: 'danger-snackBar'
       });
     } else {
       const steps = this.packagingStepDto.getValue(); // Get all steps including base64-encoded images
-  
-      this.packagingProcessService.createProcess(
-        this.packagingProcessForm.get('segment')?.getRawValue(),
-        1,
-        this.packagingProcessForm.get('processName')?.getRawValue()
-      ).pipe(
-        concatMap(response => {
-          if (response) {
-            this.snackBar.open('Packaging process saved successfully.', 'Close', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'bottom',
-            });
-            steps.map(step => step.packagingProcessId = response.id);
-            return this.packagingStepService.bulkCreatePackagingStep(steps); // Send the bulk steps with images to the backend
-          } else {
-            this.snackBar.open('Failed to save packaging process. Please try again later.', 'Close', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'bottom',
-              panelClass: 'danger-snackBar'
-            });
-            throw new Error('Failed to save packaging process');
-          }
-        })
-      ).subscribe(
-        (response: PackagingStepDTO[]) => {
-          this.snackBar.open('Packaging steps saved successfully.', 'Close', {
-            duration: 3000,
-            horizontalPosition: 'center',
-            verticalPosition: 'bottom',
+
+      this.packagingProcessService.createProcess(this.packagingProcessForm.get('segment')?.getRawValue(), 1, this.packagingProcessForm.get('processName')?.getRawValue()).pipe(concatMap(response => {
+        if (response) {
+          this.snackBar.open('Packaging process saved successfully.', 'Close', {
+            duration: 3000, horizontalPosition: 'center', verticalPosition: 'bottom',
           });
-          this.router.navigateByUrl("/packaging/settings")
-        },
-        error => {
-          this.snackBar.open('Failed to save packaging steps. Please try again later.', 'Close', {
-            duration: 3000,
-            horizontalPosition: 'center',
-            verticalPosition: 'bottom',
-            panelClass: 'danger-snackBar'
+          steps.map(step => step.packagingProcessId = response.id);
+          return this.packagingStepService.bulkCreatePackagingStep(steps); // Send the bulk steps with images to the backend
+        } else {
+          this.snackBar.open('Failed to save packaging process. Please try again later.', 'Close', {
+            duration: 3000, horizontalPosition: 'center', verticalPosition: 'bottom', panelClass: 'danger-snackBar'
           });
-          console.error('Error sending packaging steps', error);
+          throw new Error('Failed to save packaging process');
         }
-      );
+      })).subscribe((response: PackagingStepDTO[]) => {
+        this.snackBar.open('Packaging steps saved successfully.', 'Close', {
+          duration: 3000, horizontalPosition: 'center', verticalPosition: 'bottom',
+        });
+        this.router.navigateByUrl("/packaging/settings")
+      }, error => {
+        this.snackBar.open('Failed to save packaging steps. Please try again later.', 'Close', {
+          duration: 3000, horizontalPosition: 'center', verticalPosition: 'bottom', panelClass: 'danger-snackBar'
+        });
+        console.error('Error sending packaging steps', error);
+      });
     }
   }
-  
+
   /**
    *
    * @param postName
@@ -269,10 +227,11 @@ export class PackagingProcessCreateComponent implements OnInit {
    *
    * @param formControlName
    */
-  hasError(formControlName: string): boolean{
+  hasError(formControlName: string): boolean {
     return <boolean>this.processForm.get(formControlName)?.hasError('required')
   }
 
 
-  addNewStep(){}
+  addNewStep() {
+  }
 }
