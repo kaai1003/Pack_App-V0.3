@@ -20,6 +20,7 @@ import {PackagingProcessService} from "../../services/packaging-proccess.service
 import {PackagingStepService} from "../../services/packaging.step";
 import { SegmentService } from '../../services/segment.service';
 import { SegmentModul } from '../../models/segment.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-packaging-process-create',
@@ -61,6 +62,7 @@ export class PackagingProcessCreateComponent implements OnInit {
               private snackBar: MatSnackBar,
               private segmentService: SegmentService,
               private harnessService: HarnessService,
+              private router: Router,
               private packagingProcessService:PackagingProcessService,
               private packagingStepService: PackagingStepService ) {
     this.processForm = this.formBuilder.group({});
@@ -240,7 +242,7 @@ export class PackagingProcessCreateComponent implements OnInit {
             horizontalPosition: 'center',
             verticalPosition: 'bottom',
           });
-          console.log(response);
+          this.router.navigateByUrl("/packaging/settings")
         },
         error => {
           this.snackBar.open('Failed to save packaging steps. Please try again later.', 'Close', {

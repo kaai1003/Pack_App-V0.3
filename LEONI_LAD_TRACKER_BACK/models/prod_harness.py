@@ -15,10 +15,12 @@ class ProdHarness(BaseModel, db.Model):
     status = db.Column(db.Integer, default=1)
     packaging_box_id = db.Column(db.Integer, db.ForeignKey('packaging_boxs.id'), nullable=True)
 
+    harness_id = db.Column(db.Integer, db.ForeignKey('harnesses.id'), nullable=True)
+    harness = db.relationship('HarnessModel', backref='harnesses', lazy=True)
     production_job = db.relationship('ProductionJob', backref='prod_harness', lazy=True)
     packaging_box = db.relationship('PackagingBox', back_populates='prod_harness', lazy=True)
 
-    def __init__(self, uuid, box_number, range_time, production_job_id, status, packaging_box_id):
+    def __init__(self, uuid, box_number, range_time, production_job_id, status, packaging_box_id, harness_id):
         super().__init__()
         self.uuid = uuid
         self.box_number = box_number
@@ -26,6 +28,7 @@ class ProdHarness(BaseModel, db.Model):
         self.production_job_id = production_job_id
         self.status = status
         self.packaging_box_id = packaging_box_id
+        self.harness_id = harness_id
 
     def to_dict(self):
         return {
@@ -36,5 +39,6 @@ class ProdHarness(BaseModel, db.Model):
             'production_job': self.production_job.to_dict() if self.production_job else None,
             'status': self.status,
             'packaging_box_id': self.packaging_box_id,
-            'created_at': self.created_at
+            'created_at': self.created_at,
+            'harness': self.harness.to_dict() if self.harness else None
         }

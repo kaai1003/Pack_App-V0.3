@@ -1,3 +1,6 @@
+import { HarnessModel } from "../models/harness.model";
+import { PackagingBoxModel } from "../models/packaging-box.model";
+
 export class PackagingBoxDto{
   id: number;
   line_id: number;
@@ -7,7 +10,7 @@ export class PackagingBoxDto{
   status: number;
   created_by: string;
   barcode:string;
-
+  harness:HarnessModel;
 
 
 
@@ -20,5 +23,8 @@ export class PackagingBoxDto{
     this.status = data.status;
     this.created_by = data.created_by;
     this.barcode = data.barcode;
+    let balnkObjet = data.harness ? data.harness : {} as HarnessModel;
+    this.harness = balnkObjet;
+
   }
 }

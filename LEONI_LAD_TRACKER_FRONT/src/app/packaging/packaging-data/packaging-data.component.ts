@@ -54,6 +54,7 @@ export class PackagingDataComponent implements AfterViewInit {
   harnessesDisplayedColumns: string[] = [
     'select',
     'uuid',
+    'ref',
     'box_number',
     'status',
     'date',

@@ -9,19 +9,21 @@ from services.production_job_service import ProductionJobService
 
 class ProdHarnessService:
     @staticmethod
-    def create(uuid, box_number, range_time, production_job_id, status=0, packaging_box_id=None):
+    def create(uuid, box_number, range_time, production_job_id,harness_id, status=0,packaging_box_id=None,):
         try:
             exists = ProdHarnessService.prod_harness_exists(uuid)
             if exists:
                 return None
             else:
+                uuid, box_number, range_time, production_job_id, status, packaging_box_id, harness_id
                 prod_harness = ProdHarness(
                     uuid=uuid,
                     box_number=box_number,
                     range_time=range_time,
                     production_job_id=production_job_id,
                     status=status,
-                    packaging_box_id=packaging_box_id
+                    packaging_box_id=packaging_box_id,
+                    harness_id=harness_id
                 )
                 db.session.add(prod_harness)
                 if packaging_box_id:

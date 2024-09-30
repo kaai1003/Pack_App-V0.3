@@ -74,3 +74,11 @@ class PackagingBoxService:
     @staticmethod
     def get_opened_package(line_id):
         return PackagingBox.query.filter_by(line_id=line_id, status=0).first()
+
+    @staticmethod
+    def check_if_box_exist(box_ref):
+        harness = PackagingBox.query.filter_by(barcode=box_ref).first()
+        if harness:
+            return True
+        else:
+            return False

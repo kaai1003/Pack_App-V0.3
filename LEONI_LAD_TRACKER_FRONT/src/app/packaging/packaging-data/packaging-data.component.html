@@ -131,6 +131,11 @@
               <td mat-cell *matCellDef="let row"> {{row.uuid}} </td>
             </ng-container>
       
+             <!-- Ref hraness Column -->
+             <ng-container matColumnDef="ref">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="blue-color"> Referance </th>
+              <td mat-cell *matCellDef="let row"> {{row.harness ? row.harness.ref : "N/A"}} </td>
+            </ng-container>
             <!-- Box Number Column -->
             <ng-container matColumnDef="box_number">
               <th mat-header-cell *matHeaderCellDef mat-sort-header class="blue-color"> Box Number </th>

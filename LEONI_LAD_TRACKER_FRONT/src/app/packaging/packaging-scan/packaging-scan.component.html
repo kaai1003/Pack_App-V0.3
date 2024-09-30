@@ -54,7 +54,8 @@
                   </p>
                   <h2 class="card-title orange-color mt-3 text-center col-12 fw-blod">{{step.description}}</h2>
                   <div class="col-12 d-flex flex-column justify-content-center mt-1 ">
-                    <input autofocus class="form-control border-2 border-primary mb-5"
+                    <input autofocus class="form-control border-2 border-primary mb-5" 
+                           autocomplete="off"
                            formControlName="{{step.name}}"  [id]="'step'+step.order.toString()"
                            required>
                   </div>
@@ -81,8 +82,9 @@
                 </p>
                 <h4 class="card-title orange-color display-6 text-center ">Scan the lable</h4>
                 <!-- <form  class="mt-2 text-center px-5"> -->
-                  <input autofocus class="form-control border-2 border-primary"
-                         id="2CtrlInput"
+                  <input  class="form-control border-2 border-primary"
+                          autocomplete="off"
+                         id="label"
                          formControlName="label"
                          required>
                 <!-- </form> -->
@@ -112,8 +114,7 @@
               <h5 class="h6 blue-color">harness per houre</h5>
             <!-- <li class="list-group-item">Delivered </li> -->
             <ng-container *ngFor="let hour of countFxPerHour">
-            <li class="list-group-item fw-light">{{hour.hour}} <span class=" blue-color">-></span> 15h : <span class="orange-color ">{{hour.total_quantity}}</span></li>
-              
+            <li class="list-group-item fw-light">{{hour.hour}} <span class=" blue-color">-></span> {{hour.hour + 1}} : <span class="orange-color ">{{hour.total_quantity}}</span></li>
             </ng-container>
             <li class="list-group-item blue-colorfw-light">Total <span class=" blue-color"></span>  <span class="orange-color ">{{totalOfDeliveredHarnessPershift}}</span></li>
             <!-- <li class="list-group-item fw-light">14h <span class=" blue-color">-></span> 15h : <span class="orange-color ">20</span></li>

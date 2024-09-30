@@ -235,9 +235,10 @@ def create_production_harness():
     production_job_id = data.get('production_job_id')
     status = data.get('status', 0)
     packaging_box_id = data.get('packaging_box_id')
+    harness_id = data.get('harness_id')
 
-    production_harness = ProdHarnessService.create(uuid, box_number, range_time, production_job_id, status,
-                                                   packaging_box_id)
+    production_harness = ProdHarnessService.create(uuid, box_number, range_time, production_job_id, harness_id,
+                                                   status,packaging_box_id)
     if production_harness:
         return jsonify({"response": True}), 201
     else:
@@ -574,6 +575,11 @@ def get_processes_by_segment_id(segment_id):
 def get_packaging_boxes():
     packaging_boxes = PackagingBoxService.get_all_packaging_boxes()
     return jsonify([box.to_dict() for box in packaging_boxes])
+
+
+@app.route('/packaging_boxes/<string:box_ref>', methods=['GET'])
+def check_if_box_exist(box_ref):
+    return {'status':PackagingBoxService.check_if_box_exist(box_ref)}
 
 
 @app.route('/packaging_box/<int:box_id>', methods=['GET'])

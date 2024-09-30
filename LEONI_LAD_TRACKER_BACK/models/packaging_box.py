@@ -37,6 +37,6 @@ class PackagingBox(BaseModel, db.Model):
             'created_by': self.created_by,
             'barcode': self.barcode,
             'line': self.line.to_dict() if self.line is not None else None,
-            'prod_harness': [harness.to_dict() for harness in self.prod_harness],
-            'harness': self.harness.to_dict()
+            'prod_harness': [harness.to_dict() for harness in self.prod_harness.all()],
+            'harness': self.harness.to_dict() if self.harness else None
         }

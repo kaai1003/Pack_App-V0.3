@@ -4,6 +4,7 @@ from models.base_model import BaseModel
 
 class HarnessModel(BaseModel, db.Model):
     __tablename__ = 'harnesses'
+    __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True)
     ref = db.Column(db.String(50), nullable=False)
     cpn = db.Column(db.String(50), nullable=False)
@@ -15,6 +16,7 @@ class HarnessModel(BaseModel, db.Model):
     # Define the relationships
     package = db.relationship('PackagingType')
     segment = db.relationship('Segment')
+    prod_harnesses = db.relationship('ProdHarness')
 
     def __init__(self, ref, cpn, fuse_box, range_time, package_type_id, segment_id):
         super().__init__()

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import {PackagingBoxModel} from "../models/packaging-box.model";
 import {PackagingBoxDto} from "../dtos/packaging-box.dto";
 
@@ -48,4 +48,14 @@ export class PackagingBoxService {
    getOpendPackageByLineId(lineId: number): Observable<PackagingBoxDto>{
     return this.http.get<PackagingBoxDto>(`${this.baseURL}/packaging_box/opening-package/${lineId}`);
    }
+
+   checkIfBoxExsit(barcode:string):Observable<ExistResponse>{
+    return this.http.get<ExistResponse>(`${this.baseURL}/packaging_boxes/${barcode}`).pipe(
+      tap(value =>  value)
+    )
+   }
+}
+
+export class ExistResponse{
+  constructor(public status:boolean){}
 }
