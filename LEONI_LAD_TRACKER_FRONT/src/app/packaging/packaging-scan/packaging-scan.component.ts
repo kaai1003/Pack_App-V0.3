@@ -182,6 +182,9 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
           panelClass: ['danger-snackbar']
         })
         this.currentRef.next(packageBox.harness ? packageBox.harness.ref :"") 
+        
+        this.storageService.setItem('current_box_prefix', this.packagingStepsAll.getValue()[0].pre_fix) 
+
         for (let index = 0 ; index < this.packagingSteps.getValue().length +1; index++) {
           this.stepper.next()
         }   
@@ -245,11 +248,11 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
                   console.log('ProdHarness created successfully');
                   this.packagingBox.getValue().delivered_quantity++
                   // Go to last step
-                  if (this.packagingBox.getValue().delivered_quantity == this.packagingBox.getValue().to_be_delivered_quantity){
+                  if (this.packagingBox.getValue().delivered_quantity >= this.packagingBox.getValue().to_be_delivered_quantity){
                    this.stepper.next();
                   //  this.focusOnLabel()
-                   let lable = new PrintLabelRequest(this.packagingBox.getValue().barcode, this.packagingBox.getValue().barcode)
-                   this.printerService.printLable(lable).subscribe()
+                  //  let lable = new PrintLabelRequest(this.packagingBox.getValue().barcode, this.packagingBox.getValue().barcode)
+                  //  this.printerService.printLable(lable).subscribe()
                     this.focusOnLabel();
                      return;
                   }else {
@@ -773,12 +776,12 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
                     input.substring(preFix.length,input.length)
                     let harnessReference = input.substring(preFix.length,input.length)
                     // check equality 
-                    harnessReference == this.currentRef ? resolve(true) : resolve(false);
+                    harnessReference == this.currentRef.getValue() ? resolve(true) : resolve(false);
                   }else{
                      resolve(false)
                   }
                 }else{
-                    input == this.currentRef ? resolve(true) : resolve(false);
+                    input == this.currentRef.getValue() ? resolve(true) : resolve(false);
                 }
           } else {
             resolve(false);
