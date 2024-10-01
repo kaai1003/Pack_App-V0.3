@@ -73,7 +73,7 @@ class PackagingBoxService:
 
     @staticmethod
     def get_opened_package(line_id):
-        return PackagingBox.query.filter_by(line_id=line_id, status=0).first()
+        return PackagingBox.query.filter(PackagingBox.line_id == line_id, PackagingBox.status < 2).all()
 
     @staticmethod
     def check_if_box_exist(box_ref):
