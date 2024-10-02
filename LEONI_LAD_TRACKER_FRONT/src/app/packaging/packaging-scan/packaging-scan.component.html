@@ -10,14 +10,26 @@
         <p><span class="blue-color">Name:</span> <span class="orange-color"> {{ authService.getCurrentUserName }}</span></p>
         <hr>
         <!-- <p class="blue-color">Segment: <span class="orange-color">PPL</span></p> -->
-        <p class="blue-color">Current Reference: <span class="orange-color">{{ currentRef.getValue() }}</span></p>
+        <p class="blue-color">Current Reference: <span class="orange-color">{{ currentRef.getValue() ?  currentRef.getValue() : 0 }}</span></p>
         <!-- <hr> -->
-        <p>Current Box: <span
-          class="blue-color">{{ packagingBox.getValue().barcode ? packagingBox.getValue().barcode : 0 }}</span></p>
+        <p class="blue-color">Current Box: <span
+          class="orange-color">{{ packagingBox.getValue().barcode ? packagingBox.getValue().barcode : 0 }}</span></p>
         <!-- <canvas #myPieChart></canvas> -->
 
+        <ul class="list-group list-group-sm ">
+          <p class="blue-color sw-bolder">Opened Boxes: </p>
+          <li *ngFor="let box of openedBoxes.getValue()"
+              (click)="changeSelectedBox(box.id)"
+              [classList]="box.status == 1 ? 'list-group-item list-group-item-success': ' list-group-item'"
+          >
+            Barcode: <span class="blue-color"> {{box.barcode }}</span>
+            <br>
+            Ref: <span class="orange-color">{{ box.harness.ref }}</span>
+          </li>
+        </ul>
+
         <div>
-          <canvas id="myChart2" style="max-height: 250px;"></canvas>
+<!--          <canvas id="myChart2" style="max-height: 250px;"></canvas>-->
         </div>
       </div>
     </div>

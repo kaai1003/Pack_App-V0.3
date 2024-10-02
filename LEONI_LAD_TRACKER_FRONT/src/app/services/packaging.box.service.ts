@@ -42,11 +42,11 @@ export class PackagingBoxService {
 
 
   /**
-   * this function allow us to get the get the opened package by  line id
+   * this function allow us to  get the opened package by  line id
    */
 
-   getOpendPackageByLineId(lineId: number): Observable<PackagingBoxDto>{
-    return this.http.get<PackagingBoxDto>(`${this.baseURL}/packaging_box/opening-package/${lineId}`);
+   getOpendPackageByLineId(lineId: number): Observable<PackagingBoxDto[]>{
+    return this.http.get<PackagingBoxDto[]>(`${this.baseURL}/packaging_box/opening-package/${lineId}`);
    }
 
    checkIfBoxExsit(barcode:string):Observable<ExistResponse>{
@@ -54,6 +54,12 @@ export class PackagingBoxService {
       tap(value =>  value)
     )
    }
+
+  setPackagingBoxSelected(id: number) :Observable<boolean>{
+    return this.http.get<boolean>(`${this.baseURL}/packaging_boxes/set-selected/${id}`).pipe(
+      tap(value =>  value)
+    )
+  }
 }
 
 export class ExistResponse{

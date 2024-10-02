@@ -571,11 +571,16 @@ def get_processes_by_segment_id(segment_id):
 
 
 # packaging box routes
+@app.route('/packaging_boxes/set-selected/<int:box_id>', methods=['GET'])
+def set_packaging_box_default(box_id):
+    packaging_boxes = PackagingBoxService.get_all_packaging_boxes()
+    return jsonify([box.to_dict() for box in packaging_boxes])
+
+
 @app.route('/packaging_boxes', methods=['GET'])
 def get_packaging_boxes():
     packaging_boxes = PackagingBoxService.get_all_packaging_boxes()
     return jsonify([box.to_dict() for box in packaging_boxes])
-
 
 @app.route('/packaging_boxes/<string:box_ref>', methods=['GET'])
 def check_if_box_exist(box_ref):
@@ -643,9 +648,9 @@ def delete_packaging_box(box_id):
 
 @app.route('/packaging_box/opening-package/<int:line_id>')
 def opening_package(line_id):
-    packaging_box = PackagingBoxService.get_opened_package(line_id)
-    if packaging_box:
-        return jsonify(packaging_box.to_dict())
+    packaging_boxs = PackagingBoxService.get_opened_package(line_id)
+    if packaging_boxs:
+        return jsonify([box.to_dict() for box in packaging_boxs])
     return jsonify({'message': 'Packaging box not found'}), 404
 
 
