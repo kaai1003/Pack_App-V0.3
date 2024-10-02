@@ -95,11 +95,14 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
    */
   ngOnInit(): void {
 
-    this.packagingForm.get('label')?.valueChanges.pipe(tap(value => {
+    this.packagingForm.get('label')?.valueChanges.pipe(
+      debounceTime(1000),
+      tap(value => {
       if (value != "" && value === this.storageService.getItem('current_box_prefix') + this.packagingBox.getValue().barcode) {
         this.stepper.reset()
         window.location.reload();
       } else {
+        this.packagingForm.get('label')?.reset()
         this.snackBar.open("value not correct", "OK", {duration: 3000})
       }
     })).subscribe()
@@ -132,24 +135,7 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
         this.packagingForm.addControl('label', this.formBuilder.control({
           value: '', disabled: false
         }, [Validators.required, Validators.minLength(2)]));
-      })).subscribe({
-        next: () => {
-          this.packagingForm.get('label')?.valueChanges.pipe(tap(value => {
-            const prefix = this.storageService.getItem('current_box_prefix')
-            if ((prefix + value) === this.packagingBox.getValue().barcode) {
-              this.packagingBox.getValue().status = 2;
-              this.packagingBoxService.updatePackagingBox(this.packagingBox.getValue().id, this.packagingBox.getValue())
-                .subscribe({
-                  next: (value) => {
-                    this.stepper.reset()
-                  }, error: (err) => {
-                    this.snackBar.open(err.message, 'Ok', {duration: 3000})
-                  }
-                })
-            }
-          })).subscribe()
-        }
-      });
+      })).subscribe();
     }
 
 
@@ -888,10 +874,6 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
       this.currentUuid.next(counter);
       return true;
     } catch (error) {
-      // Handle the error case
-      this.snackBar.open('The Counter Not Correct', 'OK', {
-        duration: 5000, panelClass: 'danger', verticalPosition: 'top',
-      });
       return false;
     }
   }
