@@ -6,8 +6,8 @@
           class="orange-color">{{ storageService.getItem('currentProjectName') }}</span></p>
         <p><span class="blue-color">Production line:</span> <span
           class="orange-color"> {{ storageService.getItem('CurrentLineName') }} </span></p>
-        <p><span class="blue-color">Operator:</span> <span
-          class="orange-color"> {{ authService.CurrentUserMatriculate }}</span></p>
+        <p><span class="blue-color">Operator:</span> <span class="orange-color"> {{ authService.CurrentUserMatriculate }}</span></p>
+        <p><span class="blue-color">Name:</span> <span class="orange-color"> {{ authService.getCurrentUserName }}</span></p>
         <hr>
         <!-- <p class="blue-color">Segment: <span class="orange-color">PPL</span></p> -->
         <p class="blue-color">Current Reference: <span class="orange-color">{{ currentRef.getValue() }}</span></p>
