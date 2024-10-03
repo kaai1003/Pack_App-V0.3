@@ -30,7 +30,7 @@ Chart.register(ChartDataLabels);
 export class LineDisplayComponent implements OnInit, OnDestroy {
   totalQuantity: number = 0;
   countPackages: number = 0;
-  efficiency: number = 0;
+  efficiency: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   countFxPerHour: CountHourLineDto[] = [];
   countOfPackagePerHour: CountBoxPerHourLineDto[] = [];
   hourProduits: HourProduitsDTO = new HourProduitsDTO(0, 0, 0, 0);
@@ -160,20 +160,21 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
       vsm: this.storageService.getItem('availible_operators')
     }
 
-    this.lineDashboardService.getTotalQuantity(filters).subscribe((data: any) => {
-      this.totalQuantity = data.total_quantity;
-      // Update other data and charts as needed
-      this.updateCharts();
-    }, (error) => {
-      console.error('Error fetching total quantity:', error);
-    });
-
     this.lineDashboardService.getBoxCount(filters).subscribe((data: BoxCount) => {
       this.countPackages = data.box_count;
       // Update other data and charts as needed
       this.updateCharts();
     }, (error) => {
       console.error('Error fetching total quantity:', error);
+    });
+
+    this.lineDashboardService.getEfficiency(filters).subscribe((data: any) => {
+      // alert(data)
+      this.efficiency.next(data.average_efficiency) ;
+      // Update other data and charts as needed
+      this.updateCharts();
+    }, (error) => {
+      console.error('Error fetching total efficiency:', error);
     });
 
 
@@ -221,6 +222,14 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
       console.error(':', error);
     })
 
+    this.lineDashboardService.getTotalQuantity(filters).subscribe((data: any) => {
+      this.totalQuantity = data.total_quantity;
+      // Update other data and charts as needed
+      this.updateCharts();
+    }, (error) => {
+      console.error('Error fetching total quantity:', error);
+    });
+
     setTimeout(() => {
       this.onFilter();
     }, 5000)
@@ -242,25 +251,25 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
    * this function provid us to calculate efficiency
    * @returns
    */
-  calculateEfficiency(): number {
-    // Implement efficiency calculation logic based on totalQuantity and any other relevant data
-    const rangeTime = this.storageService.getItem("line_disply_rangeTime")
-    const operators = this.storageService.getItem("line_disply_operatores")
-    let start = new Date(this.formatDate(this.filterForm.get('from')?.value))
-    let to = new Date()
-    let postedHours = 0;
-    let hours = 0;
-    do {
-      hours++
-      postedHours++
-      start.setHours(start.getHours() + 1)
-    } while (hours < 8)
-    // if(this.storageService.getItem('line_disply_efficiency') === 1){
-    //   return ((this.totalQuantity * rangeTime)/(operators * hours)) * 100;
-    // }else{
-    return ((this.totalQuantity) / (this.storageService.getItem('line_disply_target'))) * 100;
-    // }
-  }
+  // calculateEfficiency(): number {
+  //   // Implement efficiency calculation logic based on totalQuantity and any other relevant data
+  //   const rangeTime = this.storageService.getItem("line_disply_rangeTime")
+  //   const operators = this.storageService.getItem("line_disply_operatores")
+  //   let start = new Date(this.formatDate(this.filterForm.get('from')?.value))
+  //   let to = new Date()
+  //   let postedHours = 0;
+  //   let hours = 0;
+  //   do {
+  //     hours++
+  //     postedHours++
+  //     start.setHours(start.getHours() + 1)
+  //   } while (hours < 8)
+  //   // if(this.storageService.getItem('line_disply_efficiency') === 1){
+  //   //   return ((this.totalQuantity * rangeTime)/(operators * hours)) * 100;
+  //   // }else{
+  //   return ((this.totalQuantity) / (this.storageService.getItem('line_disply_target'))) * 100;
+  //   // }
+  // }
 
 
   initHourlyQuantityChart(): void {

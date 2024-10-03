@@ -72,6 +72,10 @@ export class LineDashboardService {
   getEfficiencyByHour(filters: any):Observable<HourlyEfficiency[]>{
     return this.http.post<HourlyEfficiency[]>(`${this.baseUrl}/efficiency-by-hour`, filters, this.httpOptions);
   }
+
+  getEfficiency(filters: any):Observable<any>{
+    return this.http.post<any>(`${this.baseUrl}/calculate-efficiency`, filters, this.httpOptions);
+  }
 }
 
 

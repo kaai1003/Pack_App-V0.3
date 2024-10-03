@@ -94,7 +94,6 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
    *
    */
   ngOnInit(): void {
-
     this.packagingForm.get('label')?.valueChanges.pipe(
       debounceTime(1000),
       tap(value => {
