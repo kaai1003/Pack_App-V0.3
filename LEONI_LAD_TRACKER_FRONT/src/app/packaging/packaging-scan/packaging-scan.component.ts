@@ -83,6 +83,7 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
   totalOfDeliveredHarnessPershift: number = 0;
   private chart: Chart | undefined;
   @ViewChild('myPieChart') private pieChartRef!: ElementRef;
+  openedBoxes: BehaviorSubject<PackagingBoxDto[]> = new BehaviorSubject<PackagingBoxDto[]>([]);
 
   constructor(private formBuilder: FormBuilder, private snackBar: MatSnackBar, private packagingProcessService: PackagingProcessService, private packagingBoxService: PackagingBoxService, private prodHarnessService: ProdHarnessService, public storageService: StorageService, private dialog: MatDialog, private printerService: PrintingService, public authService: AuthServiceService, private lineDashboardService: LineDashboardService, private harnessService: HarnessService) {
     this.packagingForm = this.formBuilder.group({
@@ -110,7 +111,8 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
     if (isNaN(selectedPackagingProcess)) {
       this.snackBar.open("Select packaging process to preform operation")
     } else {
-      this.packagingProcessService.getProcessById(selectedPackagingProcess).pipe(tap((packagingProcess: PackagingProcess) => {
+      this.packagingProcessService.getProcessById(selectedPackagingProcess).pipe(
+        tap((packagingProcess: PackagingProcess) => {
         let packagingStepsAll = packagingProcess.steps.sort((a, b) => a.order - b.order);
         let packagingSteps = packagingProcess.steps.filter(step => step.name.includes('packaging')).sort((a, b) => a.order - b.order);
         let loopSteps = packagingProcess.steps.filter(step => !step.name.includes('packaging')).sort((a, b) => a.order - b.order);
@@ -134,7 +136,8 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
         this.packagingForm.addControl('label', this.formBuilder.control({
           value: '', disabled: false
         }, [Validators.required, Validators.minLength(2)]));
-      })).subscribe();
+      }))
+        .subscribe();
     }
 
 
@@ -144,18 +147,47 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
     // check if ther is a opend package
     // if exsit load it to contunie work on it
     let lineId = this.storageService.getItem("packagingCurrentLine");
-    this.packagingBoxService.getOpendPackageByLineId(lineId).pipe(tap((packageBox) => {
-      this.packagingBox.next(packageBox)
-      this.snackBar.open("Please complete the following package " + packageBox.barcode, "ok", {
-        duration: 50000, verticalPosition: 'bottom', panelClass: ['danger-snackbar']
-      })
-      this.currentRef.next(packageBox.harness ? packageBox.harness.ref : "")
+    this.packagingBoxService.getOpendPackageByLineId(lineId).pipe(tap((packageBoxs: PackagingBoxDto[]) => {
+      this.openedBoxes.next(packageBoxs)
 
-      this.storageService.setItem('current_box_prefix', this.packagingStepsAll.getValue()[0].pre_fix)
-
-      for (let index = 0; index < this.packagingSteps.getValue().length + 1; index++) {
-        this.stepper.next()
+      const currentBox = packageBoxs.find(box => box.status == 1);
+      if (currentBox){
+        this.packagingBox.next(currentBox);
+        this.snackBar.open("Please complete the following package " + currentBox.barcode, "ok", {
+          duration: 50000, verticalPosition: 'bottom', panelClass: ['danger-snackbar']
+        })
+        // add current to ref localStorage
+        this.currentRef.next(currentBox.harness ? currentBox.harness.ref : "")
+        // navigate to step
+        for (let index = 0; index < this.packagingSteps.getValue().length + 1; index++) {
+          this.stepper.next()
+        }
+      }else{
+        const box = packageBoxs[0]
+        box.status = 1;
+        this.packagingBoxService.updatePackagingBox(box.id,box).subscribe()
+        this.packagingBox.next(box);
+        this.snackBar.open("Please complete the following package " + box.barcode, "ok", {
+          duration: 50000, verticalPosition: 'bottom', panelClass: ['danger-snackbar']
+        })
+        // add current to ref localStorage
+        this.currentRef.next(box.harness ? box.harness.ref : "")
+        // navigate to step
+        for (let index = 0; index < this.packagingSteps.getValue().length + 1; index++) {
+          this.stepper.next()
+        }
       }
+      // this.packagingBox.next(packageBox)
+      // this.snackBar.open("Please complete the following package " + packageBox.barcode, "ok", {
+      //   duration: 50000, verticalPosition: 'bottom', panelClass: ['danger-snackbar']
+      // })
+      // this.currentRef.next(packageBox.harness ? packageBox.harness.ref : "")
+      //
+      // this.storageService.setItem('current_box_prefix', this.packagingStepsAll.getValue()[0].pre_fix)
+      //
+      // for (let index = 0; index < this.packagingSteps.getValue().length + 1; index++) {
+      //   this.stepper.next()
+      // }
       // else return to first step of loop
     })).subscribe({
       next: () => {
@@ -167,7 +199,9 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
     this.getDataForCharts()
   }
 
-
+  /**
+   *
+   */
   getDataForCharts() {
     const filters = {
       from: this.formatDate(this.filterForm.get('from')?.value),
@@ -875,6 +909,33 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
     } catch (error) {
       return false;
     }
+  }
+
+  /**
+   *
+   * @param id
+   */
+  changeSelectedBox(id: number) {
+    this.packagingBoxService.setPackagingBoxSelected(id).pipe(
+      tap((value) =>{
+          if (value.success){
+            window.location.reload()
+          }
+      }),
+      catchError((err) => {
+        this.snackBar.open(`Error during select package as defeult: ${err.message}`)
+        return of(null);
+      })
+    ).subscribe()
+  }
+
+  /**
+   *
+   */
+  openNewPackage(){
+    this.stepper.reset()
+    this.activeStep.next(0)
+    this.currentStep.next(0);
   }
 }
 

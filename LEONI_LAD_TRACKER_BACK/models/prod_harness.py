@@ -16,7 +16,7 @@ class ProdHarness(BaseModel, db.Model):
     packaging_box_id = db.Column(db.Integer, db.ForeignKey('packaging_boxs.id'), nullable=True)
 
     harness_id = db.Column(db.Integer, db.ForeignKey('harnesses.id'), nullable=True)
-    harness = db.relationship('HarnessModel', backref='harnesses', lazy=True)
+    harness = db.relationship('HarnessModel', back_populates='prod_harnesses')
     production_job = db.relationship('ProductionJob', backref='prod_harness', lazy=True)
     packaging_box = db.relationship('PackagingBox', back_populates='prod_harness', lazy=True)
 

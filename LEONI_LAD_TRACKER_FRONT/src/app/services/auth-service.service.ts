@@ -30,8 +30,4 @@ export class AuthServiceService {
   getCurrentUserId(): number{
     return this.localStorage.getItem('user').id
   }
-
-  get getCurrentUserName() {
-    return this.localStorage.getItem('user').username;
-  }
 }

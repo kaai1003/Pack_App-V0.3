@@ -3,7 +3,7 @@ from flask import jsonify
 from models.packaging_box import PackagingBox
 from database import db
 from models.prod_harness import ProdHarness
-
+from sqlalchemy.orm import sessionmaker
 
 class PackagingBoxService:
     @staticmethod
@@ -73,7 +73,7 @@ class PackagingBoxService:
 
     @staticmethod
     def get_opened_package(line_id):
-        return PackagingBox.query.filter_by(line_id=line_id, status=0).first()
+        return PackagingBox.query.filter(PackagingBox.line_id == line_id, PackagingBox.status < 2).all()
 
     @staticmethod
     def check_if_box_exist(box_ref):
@@ -82,3 +82,31 @@ class PackagingBoxService:
             return True
         else:
             return False
+
+    
+    @staticmethod
+    def set_packaging_box_default(box_id):
+        try:
+            # Start a session
+            all_opened = db.session.query(PackagingBox).filter(PackagingBox.status < 2).all()
+            
+            # Reset their status to 0
+            for box in all_opened:
+                box.status = 0
+
+            # Fetch the selected packaging box
+            selected = db.session.query(PackagingBox).filter(PackagingBox.id == box_id).first()
+            if selected:
+                selected.status = 1
+            
+            # Commit all changes at once
+            db.session.commit()
+            return True  # Return True if operation is successful
+        
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error occurred: {e}")  # Log the error for debugging
+            return False  # Return False if operation failed
+
+        finally:
+            db.session.close()

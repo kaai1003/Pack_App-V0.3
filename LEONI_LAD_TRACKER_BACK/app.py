@@ -569,13 +569,16 @@ def get_processes_by_segment_id(segment_id):
     process = PackagingProcessService.get_process_by_segment_id(segment_id)
     return jsonify(process.to_dict()), 200
 
+@app.route('/packaging_boxes/set-selected/<int:box_id>', methods=['GET'])
+def set_packaging_box_default(box_id):
+    success = PackagingBoxService.set_packaging_box_default(box_id)
+    return jsonify(success=success), 200 
 
-# packaging box routes
+
 @app.route('/packaging_boxes', methods=['GET'])
 def get_packaging_boxes():
     packaging_boxes = PackagingBoxService.get_all_packaging_boxes()
     return jsonify([box.to_dict() for box in packaging_boxes])
-
 
 @app.route('/packaging_boxes/<string:box_ref>', methods=['GET'])
 def check_if_box_exist(box_ref):
@@ -615,13 +618,48 @@ def create_packaging_box():
         return jsonify({'error': str(e)}), 500
 
 
-@app.route('/packaging_box/<int:box_id>', methods=['PUT'])
-def update_packaging_box(box_id):
-    data = request.json
-    packaging_box = PackagingBoxService.update_packaging_box(box_id, **data)
-    if packaging_box:
-        return jsonify(packaging_box.to_dict())
-    return jsonify({'message': 'Packaging box not found'}), 404
+@app.route('/packaging_box', methods=['PUT'])
+def update_packaging_box():
+    try:
+        data = request.json
+        
+        # Ensure 'id' (or box_id) is provided
+        box_id = data.get('id')
+        if not box_id:
+            return jsonify({'error': 'box_id is required'}), 400
+
+        # Extract the necessary fields
+        line_id = data.get('line', {}).get('id')
+        to_be_delivered_quantity = data.get('to_be_delivered_quantity')
+        delivered_quantity = data.get('delivered_quantity')
+        harness_id = data.get('harness_id')  # Assuming it's already flat in the data
+        status = data.get('status')
+        created_by = data.get('created_by')
+        barcode = data.get('barcode')
+
+        # Log the received data for debugging
+        print(f"Received data: {data}")
+
+        # Call the update method with the extracted values
+        packaging_box = PackagingBoxService.update_packaging_box(
+            box_id,
+            line_id=line_id,
+            to_be_delivered_quantity=to_be_delivered_quantity,
+            delivered_quantity=delivered_quantity,
+            harness_id=harness_id,
+            status=status,
+            created_by=created_by,
+            barcode=barcode
+        )
+
+        if packaging_box:
+            return jsonify({'message': 'Packaging box updated successfully', 'data': packaging_box.to_dict()}), 200
+        else:
+            return jsonify({'error': 'Packaging box not found'}), 404
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 
 
 @app.route('/packaging_box/<int:box_id>', methods=['DELETE'])
@@ -643,9 +681,9 @@ def delete_packaging_box(box_id):
 
 @app.route('/packaging_box/opening-package/<int:line_id>')
 def opening_package(line_id):
-    packaging_box = PackagingBoxService.get_opened_package(line_id)
-    if packaging_box:
-        return jsonify(packaging_box.to_dict())
+    packaging_boxs = PackagingBoxService.get_opened_package(line_id)
+    if packaging_boxs:
+        return jsonify([box.to_dict() for box in packaging_boxs])
     return jsonify({'message': 'Packaging box not found'}), 404
 
 

@@ -6,18 +6,40 @@
           class="orange-color">{{ storageService.getItem('currentProjectName') }}</span></p>
         <p><span class="blue-color">Production line:</span> <span
           class="orange-color"> {{ storageService.getItem('CurrentLineName') }} </span></p>
-        <p><span class="blue-color">Operator:</span> <span class="orange-color"> {{ authService.CurrentUserMatriculate }}</span></p>
-        <p><span class="blue-color">Name:</span> <span class="orange-color"> {{ authService.getCurrentUserName }}</span></p>
+        <p><span class="blue-color">Operator:</span> <span
+          class="orange-color"> {{ authService.CurrentUserMatriculate }}</span></p>
         <hr>
         <!-- <p class="blue-color">Segment: <span class="orange-color">PPL</span></p> -->
-        <p class="blue-color">Current Reference: <span class="orange-color">{{ currentRef.getValue() }}</span></p>
+        <p class="blue-color">Current Reference: <span class="orange-color">{{ currentRef.getValue() ?  currentRef.getValue() : 0 }}</span></p>
         <!-- <hr> -->
-        <p>Current Box: <span
-          class="blue-color">{{ packagingBox.getValue().barcode ? packagingBox.getValue().barcode : 0 }}</span></p>
+        <p class="blue-color">Current Box: <span
+          class="orange-color">{{ packagingBox.getValue().barcode ? packagingBox.getValue().barcode : 0 }}</span></p>
         <!-- <canvas #myPieChart></canvas> -->
 
+        <ul class="list-group list-group-sm ">
+          <p class="blue-color sw-bolder">Opened Boxes:
+            <button class="btn btn-outline-success shadow-sm btn-sm py-0" (click)="openNewPackage()">
+            New package
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+              <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+            </svg>
+          </button> </p>
+          <li *ngFor="let box of openedBoxes.getValue()"
+              (click)="changeSelectedBox(box.id)"
+              [classList]="box.status == 1 ? 'list-group-item list-group-item-success': ' list-group-item'"
+          >
+            Barcode: <span class="blue-color"> {{box.barcode }}</span>
+            <br>
+            Ref: <span class="orange-color">{{ box.harness.ref }}</span>
+            <br>
+            Q :<span class="text-success mx-2">{{ box.to_be_delivered_quantity }}</span>
+            Picked: <span class="text-danger">{{ box.delivered_quantity }}</span>
+
+          </li>
+        </ul>
+
         <div>
-          <canvas id="myChart2" style="max-height: 250px;"></canvas>
+<!--          <canvas id="myChart2" style="max-height: 250px;"></canvas>-->
         </div>
       </div>
     </div>

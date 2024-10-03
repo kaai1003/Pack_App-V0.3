@@ -32,7 +32,7 @@ export class PackagingBoxService {
 
   // Method to update an existing packaging box
   updatePackagingBox(packagingBoxId: number, PackagingBoxModel: any): Observable<any> {
-    return this.http.put<any>(`${this.baseURL}/packaging_box/${packagingBoxId}`, PackagingBoxModel);
+    return this.http.put<any>(`${this.baseURL}/packaging_box`, PackagingBoxModel);
   }
 
   // Method to delete a packaging box
@@ -42,11 +42,11 @@ export class PackagingBoxService {
 
 
   /**
-   * this function allow us to get the get the opened package by  line id
+   * this function allow us to  get the opened package by  line id
    */
 
-   getOpendPackageByLineId(lineId: number): Observable<PackagingBoxDto>{
-    return this.http.get<PackagingBoxDto>(`${this.baseURL}/packaging_box/opening-package/${lineId}`);
+   getOpendPackageByLineId(lineId: number): Observable<PackagingBoxDto[]>{
+    return this.http.get<PackagingBoxDto[]>(`${this.baseURL}/packaging_box/opening-package/${lineId}`);
    }
 
    checkIfBoxExsit(barcode:string):Observable<ExistResponse>{
@@ -54,8 +54,19 @@ export class PackagingBoxService {
       tap(value =>  value)
     )
    }
+
+  setPackagingBoxSelected(id: number) :Observable<Status>{
+    return this.http.get<Status>(`${this.baseURL}/packaging_boxes/set-selected/${id}`).pipe(
+      tap(value =>  value)
+    )
+  }
 }
 
 export class ExistResponse{
   constructor(public status:boolean){}
+}
+
+export class Status{
+  constructor(public success:boolean) {
+  }
 }

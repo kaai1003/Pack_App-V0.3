@@ -16,7 +16,7 @@ class HarnessModel(BaseModel, db.Model):
     # Define the relationships
     package = db.relationship('PackagingType')
     segment = db.relationship('Segment')
-    prod_harnesses = db.relationship('ProdHarness')
+    prod_harnesses = db.relationship('ProdHarness', back_populates='harness')
 
     def __init__(self, ref, cpn, fuse_box, range_time, package_type_id, segment_id):
         super().__init__()
