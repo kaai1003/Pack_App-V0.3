@@ -80,7 +80,7 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
     from: [this.formatDate(new Date()), Validators.required], to: [this.formatDate(new Date()), Validators.required]
   });
   countFxPerHour: CountHourLineDto[] = [];
-  totalOfDeliveredHarnessPershift: number = 0;
+  totalOfDeliveredHarnessPerShift: number = 0;
   private chart: Chart | undefined;
   @ViewChild('myPieChart') private pieChartRef!: ElementRef;
   openedBoxes: BehaviorSubject<PackagingBoxDto[]> = new BehaviorSubject<PackagingBoxDto[]>([]);
@@ -356,7 +356,7 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
 
     this.countFxPerHour = postedHours
     this.countFxPerHour.map(value => {
-      this.totalOfDeliveredHarnessPershift += parseInt(value.total_quantity.toString())
+      this.totalOfDeliveredHarnessPerShift += parseInt(value.total_quantity.toString())
     })
 
 
