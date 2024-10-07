@@ -326,7 +326,7 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
     chart.data.labels = this.countFxPerHour.map((item: any, index) => item.hour + 'h -> ' + (item.hour + 1) + 'h');
     // chart.data.datasets[0].data = this.countFxPerHour.map((item: any) => item.total_quantity);
     chart.data.datasets = [{
-      label: 'Quantity per hour',
+      label: 'Output per hour',
       data: this.countFxPerHour.map((item: any) => item.total_quantity),
       borderColor: '#ff7614a4',
       backgroundColor: '#ff7614a4',

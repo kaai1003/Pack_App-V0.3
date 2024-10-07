@@ -1,5 +1,5 @@
-import {AfterViewInit, Component, ElementRef, HostListener, input, OnInit, ViewChild} from '@angular/core';
-import {MatStepper, MatStepperModule} from "@angular/material/stepper";
+import { AfterViewInit, Component, ElementRef, HostListener, input, OnInit, ViewChild } from '@angular/core';
+import { MatStepper, MatStepperModule } from "@angular/material/stepper";
 import {
   BehaviorSubject,
   concatMap,
@@ -11,29 +11,29 @@ import {
   queueScheduler,
   switchMap
 } from "rxjs";
-import {catchError, tap} from "rxjs/operators";
-import {PackagingBoxDto} from "../../dtos/packaging-box.dto";
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
-import {MatFormFieldModule, MatLabel} from "@angular/material/form-field";
+import { catchError, tap } from "rxjs/operators";
+import { PackagingBoxDto } from "../../dtos/packaging-box.dto";
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
+import { MatFormFieldModule, MatLabel } from "@angular/material/form-field";
 import Chart from "chart.js/auto";
-import {PackagingProcess} from "../../models/packaging.proccess.model";
-import {PackagingProcessService} from "../../services/packaging-proccess.service";
-import {AsyncPipe, DatePipe, NgForOf} from "@angular/common";
-import {PackagingStep} from "../../models/packaging.step.model";
-import {HarnessService} from "../../services/harness.service";
-import {PackagingBoxService} from "../../services/packaging.box.service";
-import {ProdHarnessService} from "../../services/prod-harness.service";
-import {MatSnackBar} from "@angular/material/snack-bar";
-import {CreateProdHarnessDTO} from '../../dtos/create-prod-harness.dto';
-import {StorageService} from '../../services/storage.service';
-import {LineDashboardService} from '../../services/line.dashboard';
-import {CountHourLineDto} from '../../dtos/Line.dashboard.dto';
-import {LineDisplayDialogComponent} from '../line-display-dialog/line-display-dialog.component';
-import {MatDialog} from '@angular/material/dialog';
-import {PrintingService} from '../../services/printer-service';
-import {PrintLabelRequest} from '../../dtos/settings.dto';
-import {AuthServiceService} from '../../services/auth-service.service';
-import {HarnessModel} from '../../models/harness.model';
+import { PackagingProcess } from "../../models/packaging.proccess.model";
+import { PackagingProcessService } from "../../services/packaging-proccess.service";
+import { AsyncPipe, DatePipe, NgForOf } from "@angular/common";
+import { PackagingStep } from "../../models/packaging.step.model";
+import { HarnessService } from "../../services/harness.service";
+import { PackagingBoxService } from "../../services/packaging.box.service";
+import { ProdHarnessService } from "../../services/prod-harness.service";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { CreateProdHarnessDTO } from '../../dtos/create-prod-harness.dto';
+import { StorageService } from '../../services/storage.service';
+import { LineDashboardService } from '../../services/line.dashboard';
+import { CountHourLineDto } from '../../dtos/Line.dashboard.dto';
+import { LineDisplayDialogComponent } from '../line-display-dialog/line-display-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { PrintingService } from '../../services/printer-service';
+import { PrintLabelRequest } from '../../dtos/settings.dto';
+import { AuthServiceService } from '../../services/auth-service.service';
+import { HarnessModel } from '../../models/harness.model';
 
 @Component({
   selector: 'app-packaging-scan',
@@ -98,14 +98,14 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
     this.packagingForm.get('label')?.valueChanges.pipe(
       debounceTime(1000),
       tap(value => {
-      if (value != "" && value === this.storageService.getItem('current_box_prefix') + this.packagingBox.getValue().barcode) {
-        this.stepper.reset()
-        window.location.reload();
-      } else {
-        this.packagingForm.get('label')?.reset()
-        this.snackBar.open("value not correct", "OK", {duration: 3000})
-      }
-    })).subscribe()
+        if (value != "" && value === this.storageService.getItem('current_box_prefix') + this.packagingBox.getValue().barcode) {
+          this.stepper.reset()
+          window.location.reload();
+        } else {
+          this.packagingForm.get('label')?.reset()
+          this.snackBar.open("value not correct", "OK", { duration: 3000 })
+        }
+      })).subscribe()
     this.setDefaultDates()
     const selectedPackagingProcess = this.storageService.getItem("process_id");
     if (isNaN(selectedPackagingProcess)) {
@@ -113,30 +113,30 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
     } else {
       this.packagingProcessService.getProcessById(selectedPackagingProcess).pipe(
         tap((packagingProcess: PackagingProcess) => {
-        let packagingStepsAll = packagingProcess.steps.sort((a, b) => a.order - b.order);
-        let packagingSteps = packagingProcess.steps.filter(step => step.name.includes('packaging')).sort((a, b) => a.order - b.order);
-        let loopSteps = packagingProcess.steps.filter(step => !step.name.includes('packaging')).sort((a, b) => a.order - b.order);
-        this.loopsSteps.next(loopSteps);
-        this.packagingProcess.next(packagingProcess)
-        this.packagingSteps.next(packagingSteps);
-        this.packagingStepsAll.next(packagingStepsAll);
-        packagingProcess.steps.forEach(step => {
-          const controlName = step.name;
-          this.packagingForm.addControl(controlName, this.formBuilder.control({
+          let packagingStepsAll = packagingProcess.steps.sort((a, b) => a.order - b.order);
+          let packagingSteps = packagingProcess.steps.filter(step => step.name.includes('packaging')).sort((a, b) => a.order - b.order);
+          let loopSteps = packagingProcess.steps.filter(step => !step.name.includes('packaging')).sort((a, b) => a.order - b.order);
+          this.loopsSteps.next(loopSteps);
+          this.packagingProcess.next(packagingProcess)
+          this.packagingSteps.next(packagingSteps);
+          this.packagingStepsAll.next(packagingStepsAll);
+          packagingProcess.steps.forEach(step => {
+            const controlName = step.name;
+            this.packagingForm.addControl(controlName, this.formBuilder.control({
+              value: '', disabled: false
+            }, [Validators.required, Validators.minLength(2)]));
+            // Subscribe to valueChanges for each control
+            this.packagingForm.get(controlName)?.valueChanges.pipe(debounceTime(1000)).subscribe(value => {
+              if (value !== '') {
+                this.lastChangedControl = { name: controlName, value: value };
+                this.evaluateStepCondition(step);
+              }
+            });
+          });
+          this.packagingForm.addControl('label', this.formBuilder.control({
             value: '', disabled: false
           }, [Validators.required, Validators.minLength(2)]));
-          // Subscribe to valueChanges for each control
-          this.packagingForm.get(controlName)?.valueChanges.pipe(debounceTime(1000)).subscribe(value => {
-            if (value !== '') {
-              this.lastChangedControl = {name: controlName, value: value};
-              this.evaluateStepCondition(step);
-            }
-          });
-        });
-        this.packagingForm.addControl('label', this.formBuilder.control({
-          value: '', disabled: false
-        }, [Validators.required, Validators.minLength(2)]));
-      }))
+        }))
         .subscribe();
     }
 
@@ -151,7 +151,7 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
       this.openedBoxes.next(packageBoxs)
 
       const currentBox = packageBoxs.find(box => box.status == 1);
-      if (currentBox){
+      if (currentBox) {
         this.packagingBox.next(currentBox);
         this.snackBar.open("Please complete the following package " + currentBox.barcode, "ok", {
           duration: 50000, verticalPosition: 'bottom', panelClass: ['danger-snackbar']
@@ -162,10 +162,10 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
         for (let index = 0; index < this.packagingSteps.getValue().length + 1; index++) {
           this.stepper.next()
         }
-      }else{
+      } else {
         const box = packageBoxs[0]
         box.status = 1;
-        this.packagingBoxService.updatePackagingBox(box.id,box).subscribe()
+        this.packagingBoxService.updatePackagingBox(box.id, box).subscribe()
         this.packagingBox.next(box);
         this.snackBar.open("Please complete the following package " + box.barcode, "ok", {
           duration: 50000, verticalPosition: 'bottom', panelClass: ['danger-snackbar']
@@ -262,7 +262,7 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
             }
           } else {
             console.error('Failed to create ProdHarness');
-            this.snackBar.open("Failed to create new production harness", "ok", {duration: 3000})
+            this.snackBar.open("Failed to create new production harness", "ok", { duration: 3000 })
             this.activeStep.next(this.loopsSteps.getValue()[0].order)
             this.currentCounter.next("")
             this.focusCtrl(this.loopsSteps.getValue()[0].order);
@@ -272,7 +272,7 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
           }
         }), catchError(error => {
           console.error('Error occurred while creating ProdHarness:', error);
-          this.snackBar.open("Failed to create new production harness", "ok", {duration: 3000})
+          this.snackBar.open("Failed to create new production harness", "ok", { duration: 3000 })
           this.activeStep.next(this.loopsSteps.getValue()[0].order)
           this.currentCounter.next("")
           this.focusCtrl(this.loopsSteps.getValue()[0].order);
@@ -436,7 +436,7 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
                       resolve(true)
                       this.storageService.setItem('current_box_prefix', preFix);
                     } else {
-                      this.snackBar.open('Box already exist ', 'Ok', {duration: 5000})
+                      this.snackBar.open('Box already exist ', 'Ok', { duration: 5000 })
                       resolve(false)
                     }
                   }, error: (err) => {
@@ -459,7 +459,7 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
                     this.storageService.setItem('current_box_prefix', '');
                     resolve(true)
                   } else {
-                    this.snackBar.open('Box already exist ', 'Ok', {duration: 5000})
+                    this.snackBar.open('Box already exist ', 'Ok', { duration: 5000 })
                   }
                 }, error: (err) => {
                   this.snackBar.open(err.message)
@@ -879,7 +879,7 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
    */
   openDialog(): void {
     this.dialog.open(LineDisplayDialogComponent, {
-      width: '50%', data: { /* pass any data here if needed */}
+      width: '50%', data: { /* pass any data here if needed */ }
     });
   }
 
@@ -917,10 +917,10 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
    */
   changeSelectedBox(id: number) {
     this.packagingBoxService.setPackagingBoxSelected(id).pipe(
-      tap((value) =>{
-          if (value.success){
-            window.location.reload()
-          }
+      tap((value) => {
+        if (value.success) {
+          window.location.reload()
+        }
       }),
       catchError((err) => {
         this.snackBar.open(`Error during select package as defeult: ${err.message}`)
@@ -932,7 +932,7 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
   /**
    *
    */
-  openNewPackage(){
+  openNewPackage() {
     this.stepper.reset()
     this.activeStep.next(0)
     this.currentStep.next(0);
