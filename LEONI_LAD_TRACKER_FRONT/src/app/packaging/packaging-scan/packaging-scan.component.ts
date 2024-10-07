@@ -210,7 +210,7 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
     }
     this.lineDashboardService.getQuantityByHour(filters).subscribe((data: any) => {
       this.countFxPerHour = data
-      // this.initializeCharts();
+      this.initializeCharts();
     }, (error) => {
       console.error('Error fetching hourly quantity:', error);
     });
@@ -220,8 +220,12 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
    *
    */
   ngAfterViewInit(): void {
-    setTimeout(() => {
-      this.initializeCharts()
+    // setTimeout(() => {
+    //   this.initializeCharts()
+    // }, 3000)
+
+    setInterval(() => {
+      this.getDataForCharts();
     }, 3000)
   }
 
@@ -355,33 +359,34 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
     } while (hourCout < 8)
 
     this.countFxPerHour = postedHours
+    this.totalOfDeliveredHarnessPerShift = 0
     this.countFxPerHour.map(value => {
       this.totalOfDeliveredHarnessPerShift += parseInt(value.total_quantity.toString())
     })
 
 
-    const ctx2 = document.getElementById('myChart2') as HTMLCanvasElement;
-    const labels = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'H7', 'H8'];
-    new Chart(ctx2, {
-      type: 'line', data: {
-        labels: labels, datasets: [{
-          label: 'Harness per hour',
-          data: this.countFxPerHour.map(value => value.total_quantity),
-          fill: false,
-          borderColor: 'rgb(255, 165, 0)', // Orange color
-          backgroundColor: 'rgb(0,128,255)', // Blue color for points
-          tension: 0.1,
-        }]
-      }, options: {
-        responsive: true, plugins: {
-          legend: {
-            display: false, position: 'top',
-          }, title: {
-            display: false, text: 'progress'
-          }
-        }
-      }
-    });
+    // const ctx2 = document.getElementById('myChart2') as HTMLCanvasElement;
+    // const labels = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'H7', 'H8'];
+    // new Chart(ctx2, {
+    //   type: 'line', data: {
+    //     labels: labels, datasets: [{
+    //       label: 'Harness per hour',
+    //       data: this.countFxPerHour.map(value => value.total_quantity),
+    //       fill: false,
+    //       borderColor: 'rgb(255, 165, 0)', // Orange color
+    //       backgroundColor: 'rgb(0,128,255)', // Blue color for points
+    //       tension: 0.1,
+    //     }]
+    //   }, options: {
+    //     responsive: true, plugins: {
+    //       legend: {
+    //         display: false, position: 'top',
+    //       }, title: {
+    //         display: false, text: 'progress'
+    //       }
+    //     }
+    //   }
+    // });
   }
 
   /**
@@ -923,7 +928,7 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
         }
       }),
       catchError((err) => {
-        this.snackBar.open(`Error during select package as defeult: ${err.message}`)
+        this.snackBar.open(`Error during select package as default: ${err.message}`)
         return of(null);
       })
     ).subscribe()
