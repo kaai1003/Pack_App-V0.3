@@ -1,21 +1,22 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {BaseChartDirective} from "ng2-charts";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { BaseChartDirective } from "ng2-charts";
 import Chart from 'chart.js/auto';
-import {MatCardModule} from "@angular/material/card";
-import {Router, RouterOutlet} from "@angular/router";
-import {CommonModule} from '@angular/common';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {HourlyEfficiency, LineDashboardService} from '../../services/line.dashboard';
-import {MatDialog} from '@angular/material/dialog';
-import {LineDisplayDialogComponent} from '../line-display-dialog/line-display-dialog.component';
+import { MatCardModule } from "@angular/material/card";
+import { Router, RouterOutlet } from "@angular/router";
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { HourlyEfficiency, LineDashboardService } from '../../services/line.dashboard';
+import { MatDialog } from '@angular/material/dialog';
+import { LineDisplayDialogComponent } from '../line-display-dialog/line-display-dialog.component';
 import {
   BoxCount, CountBoxPerHourLineDto, CountHourLineDto, HourProduitsDTO, refQuantityDto
 } from '../../dtos/Line.dashboard.dto';
-import {StorageService} from '../../services/storage.service';
-import {SegmentService} from '../../services/segment.service';
-import {ProductionLineService} from '../../services/production.line.service';
-import {BehaviorSubject} from 'rxjs';
+import { StorageService } from '../../services/storage.service';
+import { SegmentService } from '../../services/segment.service';
+import { ProductionLineService } from '../../services/production.line.service';
+import { BehaviorSubject } from 'rxjs';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { DisplayTopInfoComponent } from "../components/display-top-info/display-top-info.component";
 
 Chart.register(ChartDataLabels);
 
@@ -23,7 +24,7 @@ Chart.register(ChartDataLabels);
 @Component({
   selector: 'app-line-display',
   standalone: true,
-  imports: [BaseChartDirective, MatCardModule, ReactiveFormsModule, RouterOutlet, CommonModule],
+  imports: [BaseChartDirective, MatCardModule, ReactiveFormsModule, RouterOutlet, CommonModule, DisplayTopInfoComponent],
   templateUrl: './line-display.component.html',
   styleUrl: './line-display.component.css'
 })
@@ -38,7 +39,6 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
     from: [this.formatDate(new Date()), Validators.required], to: [this.formatDate(new Date()), Validators.required]
   });
   countFxPerRef: refQuantityDto[] = [];
-  currentTime: Date = new Date();
   InProgress: number = 0;
   intervalId: any;
   line: BehaviorSubject<string> = new BehaviorSubject<string>("")
@@ -59,15 +59,10 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
     }, 3000); // 3 seconds
 
 
-    setInterval(() => {
-      this.currentTime = new Date();
-    }, 1000);
-
-
   }
 
   reloadCurrentPage() {
-    this.router.navigateByUrl('/packaging/report', {skipLocationChange: true}).then(() => {
+    this.router.navigateByUrl('/packaging/report', { skipLocationChange: true }).then(() => {
       this.router.navigate([this.router.url]).then(() => {
         // Set the page to
         this.initHourlyQuantityChart()
@@ -170,7 +165,7 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
 
     this.lineDashboardService.getEfficiency(filters).subscribe((data: any) => {
       // alert(data)
-      this.efficiency.next(data.average_efficiency) ;
+      this.efficiency.next(data.average_efficiency);
       // Update other data and charts as needed
       this.updateCharts();
     }, (error) => {
@@ -348,18 +343,18 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
 
   openDialog(): void {
     this.dialog.open(LineDisplayDialogComponent, {
-      width: '50%', data: { /* pass any data here if needed */}
+      width: '50%', data: { /* pass any data here if needed */ }
     });
   }
 
   getEcartColorAndArrow(): { colorClass: string, arrow: string } {
     const ecart = this.calculateExpected() - this.totalQuantity;
     if (ecart > 0) {
-      return {colorClass: 'text-danger fw-bold', arrow: '↓'};
+      return { colorClass: 'text-danger fw-bold', arrow: '↓' };
     } else if (ecart < 0) {
-      return {colorClass: 'text-success fw-bold', arrow: '↑'};
+      return { colorClass: 'text-success fw-bold', arrow: '↑' };
     } else {
-      return {colorClass: '', arrow: ''}; // Default or no change needed
+      return { colorClass: '', arrow: '' }; // Default or no change needed
     }
   }
 

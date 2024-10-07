@@ -1,0 +1,38 @@
+<div class=" row my-auto">
+    <div class="col-lg-12  fw-blod  mb-1 py-auto">
+        <div class="card-body py-3  d-flex justify-content-around">
+            <h4 class="text-center light-blue-color d-flex fw-blod justify-content-around  my-auto white-glass p-2">
+                <span class="blue-color">TL:</span>
+                <span class="orange-color mx-1 fw-blod">{{ storageService.getItem('team_leader') }} </span>
+            </h4>
+
+            <h4 class="text-center light-blue-color d-flex justify-content-around  my-auto white-glass p-2">
+                <span class="blue-color">Project : </span>
+                <span class="mx-1 orange-color "> {{ storageService.getItem('currentProjectName') }}</span>
+            </h4>
+            <h4 class="text-center  light-blue-color d-flex justify-content-around  my-auto white-glass p-2">
+                <span class="blue-color ">Line :</span>
+                <span class="orange-color mx-1 ">{{ storageService.getItem('CurrentLineName') }}</span>
+            </h4>
+            <h4
+                class="text-center bg-primary text-white light-blue-color d-flex justify-content-around  my-auto white-glass p-2">
+                <span class="">Target Operators:</span>
+                <span class=" mx-2">{{ storageService.getItem('line_disply_operatores') }}</span>
+            </h4>
+            <h4
+                class="text-center text-white bg-success light-blue-color d-flex justify-content-around  my-auto white-glass p-2">
+                <span class="">Present Operators:</span>
+                <span class=" mx-2">{{ storageService.getItem('availible_operators') }}</span>
+            </h4>
+            <h4
+                class="text-center bg-danger text-white light-blue-color d-flex justify-content-around  my-auto white-glass p-2">
+                <span class=""> Absence:</span>
+                <span class="mx-2">{{ storageService.getItem('line_disply_operatores') -
+                    storageService.getItem('availible_operators') }}</span>
+            </h4>
+            <h4 class="text-center light-blue-color d-flex justify-content-around  my-auto white-glass p-2">
+                <span class="fw-bold mx-auto  blue-color"> {{ currentTime | date: 'dd/MM/yyyy HH:mm:ss' }} </span>
+            </h4>
+        </div>
+    </div>
+</div>
