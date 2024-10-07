@@ -75,27 +75,15 @@
         <!-- END: Remove this -->
 
         <!-- HarnessLeftGraph -->
-        <!-- <mat-card class="col-lg-6 white-glass shadow-sm">
-          <mat-card-title class="blue-color text-center fw-light">
-            Effeciency per Hour
-          </mat-card-title>
-          <mat-card-content>
-            <canvas id="effeciencyChart" style="height: auto;"></canvas>
-          </mat-card-content>
-        </mat-card> -->
         <mat-card class="col-lg-6 white-glass shadow-sm">
           <app-display-efficiency-graph [filters]="graphFilters" />
         </mat-card>
 
         <!-- HarnessRightGraph -->
         <mat-card class="col-lg-6 white-glass shadow-sm">
-          <mat-card-title class="blue-color text-center fw-light">
-            Harness per Hour
-          </mat-card-title>
-          <mat-card-content>
-            <canvas id="hourlyQuantityChart" style="height: auto"></canvas>
-          </mat-card-content>
+          <app-display-output-graph [filters]="graphFilters" />
         </mat-card>
+
       </div>
     </section>
 
