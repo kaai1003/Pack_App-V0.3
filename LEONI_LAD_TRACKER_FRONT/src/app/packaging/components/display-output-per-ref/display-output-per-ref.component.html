@@ -1,0 +1,23 @@
+<mat-card-title class="blue-color fw-blod my-auto text-center">
+  <h2 class="fw-blod d-flex justify-content-around my-auto">
+    <span>Output per harness</span>
+  </h2>
+</mat-card-title>
+<div *ngFor="let count of countFxPerRef" class="col-6 p-2 rounded-2">
+  <mat-card
+    class="my-1 orange-color fw-blod d-flex border rounded-3"
+    [class.bg-danger-subtle]="count.total_quantity <= 0"
+  >
+    <div class="d-flex justify-content-around">
+      <h3 class="fw-bold text-orange my-auto">
+        {{ count.code_fournisseur + "  " }}
+      </h3>
+      <h3
+        [class.light-blue-color]="count.total_quantity > 0"
+        [class.text-danger]="count.total_quantity <= 0"
+      >
+        {{ "     " + count.total_quantity }}
+      </h3>
+    </div>
+  </mat-card>
+</div>

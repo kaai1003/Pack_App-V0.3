@@ -31,6 +31,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { DisplayTopInfoComponent } from '../components/display-top-info/display-top-info.component';
 import { DisplayEfficiencyGraphComponent } from '../components/display-efficiency-graph/display-efficiency-graph.component';
 import { DisplayOutputGraphComponent } from '../components/display-output-graph/display-output-graph.component';
+import { DisplayOutputPerRefComponent } from '../components/display-output-per-ref/display-output-per-ref.component';
 
 Chart.register(ChartDataLabels);
 
@@ -46,6 +47,7 @@ Chart.register(ChartDataLabels);
     DisplayTopInfoComponent,
     DisplayEfficiencyGraphComponent,
     DisplayOutputGraphComponent,
+    DisplayOutputPerRefComponent
   ],
   templateUrl: './line-display.component.html',
   styleUrl: './line-display.component.css',

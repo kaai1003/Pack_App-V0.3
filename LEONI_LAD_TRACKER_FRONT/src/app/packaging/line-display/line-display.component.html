@@ -83,7 +83,6 @@
         <mat-card class="col-lg-6 white-glass shadow-sm">
           <app-display-output-graph [filters]="graphFilters" />
         </mat-card>
-
       </div>
     </section>
 
@@ -99,34 +98,8 @@
             </mat-card-content>
           </mat-card>
         </div>
-
         <div class="white-glass col-lg-6 row justify-content-around">
-          <mat-card-title class="blue-color fw-blod my-auto text-center">
-            <h2 class="fw-blod d-flex justify-content-around my-auto">
-              <span>Quantity per reference</span>
-            </h2>
-          </mat-card-title>
-          <div *ngFor="let count of countFxPerRef" class="col-6 p-2 rounded-2">
-            <mat-card
-              [class]="count.total_quantity > 0 ? '' : 'bg-danger-subtle'"
-              class="my-1 orange-color fw-blod d-flex border rounded-3"
-            >
-              <div class="d-flex justify-content-around">
-                <h3 class="fw-bold text-orange my-auto">
-                  {{ count.code_fournisseur + "  " }}
-                </h3>
-                <h3
-                  [class]="
-                    count.total_quantity > 0
-                      ? 'light-blue-color'
-                      : 'text-danger'
-                  "
-                >
-                  {{ "     " + count.total_quantity }}
-                </h3>
-              </div>
-            </mat-card>
-          </div>
+          <app-display-output-per-ref [filters]="graphFilters" />
         </div>
       </div>
     </section>
