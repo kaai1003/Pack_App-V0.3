@@ -32,6 +32,7 @@ import { DisplayEfficiencyGraphComponent } from '../components/display-efficienc
 import { DisplayOutputGraphComponent } from '../components/display-output-graph/display-output-graph.component';
 import { DisplayOutputPerRefComponent } from '../components/display-output-per-ref/display-output-per-ref.component';
 import { formatDateDashes } from '../../utils/formatDate';
+import { DisplayEfficiencyGaugeComponent } from '../components/display-efficiency-gauge/display-efficiency-gauge.component';
 
 Chart.register(ChartDataLabels);
 
@@ -48,6 +49,7 @@ Chart.register(ChartDataLabels);
     DisplayEfficiencyGraphComponent,
     DisplayOutputGraphComponent,
     DisplayOutputPerRefComponent,
+    DisplayEfficiencyGaugeComponent,
   ],
   templateUrl: './line-display.component.html',
   styleUrl: './line-display.component.css',
