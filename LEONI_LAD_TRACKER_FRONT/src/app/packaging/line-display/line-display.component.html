@@ -8,7 +8,7 @@
           <mat-card-content>
             <h1
               class="text-center fw-blod m-2 p-3"
-              style="transform: scale(1.4)"
+              style="transform: scale(2)"
             >
               {{ getOpbjectif() }}
             </h1>
@@ -18,7 +18,7 @@
         <mat-card class="col-lg-2 text-white info-glass">
           <mat-card-title class="text-center"> Expected </mat-card-title>
           <mat-card-content>
-            <h1 class="text-center m-2 p-3" style="transform: scale(1.4)">
+            <h1 class="text-center m-2 p-3" style="transform: scale(2)">
               {{ calculateExpected() | number : "1.0-0" }}
             </h1>
           </mat-card-content>
@@ -29,7 +29,7 @@
           <mat-card-content>
             <h1
               class="text-center fw-blod m-2 p-3"
-              style="transform: scale(1.4)"
+              style="transform: scale(2)"
             >
               {{ totalQuantity ? totalQuantity : 0 }}
             </h1>
@@ -39,7 +39,7 @@
         <mat-card class="col-lg-2 warning-glass text-white">
           <mat-card-title class="text-center"> Gap </mat-card-title>
           <mat-card-content>
-            <h1 class="text-center m-2 p-3" style="transform: scale(1.4)">
+            <h1 class="text-center m-2 p-3" style="transform: scale(2)">
               <span
                 *ngIf="getEcartColorAndArrow().arrow"
                 [ngClass]="getEcartColorAndArrow().colorClass"
