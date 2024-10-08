@@ -38,13 +38,13 @@ export class DisplayOutputGraphComponent implements OnInit {
   ngOnInit(): void {
     const ctx = document.getElementById('OutputGraph') as HTMLCanvasElement;
     const chart = new Chart(ctx, {
-      type: 'bar',
       data: {
-        labels: [''],
+        labels: ['Efficiency Per Hour'],
         datasets: [
           {
-            label: 'Hourly Quantity',
-            data: [10, 20, 30, 40], // Sample data
+            type: 'bar',
+            label: 'Output per hour',
+            data: [],
             borderColor: '#ff7514',
             backgroundColor: '#ff7514',
             borderWidth: 1,
@@ -52,15 +52,29 @@ export class DisplayOutputGraphComponent implements OnInit {
         ],
       },
       options: {
+        animation: { duration: 0 },
         responsive: true,
         maintainAspectRatio: true,
-        animation: {
-          duration: 0,
-        },
         plugins: {
+          annotation: {
+            annotations: {
+              line1: {
+                type: 'line',
+                yMin: 0,
+                yMax: 0,
+                borderColor: 'green',
+                borderWidth: 2,
+                label: {
+                  backgroundColor: 'green',
+                  content: '0',
+                  display: true,
+                },
+              },
+            },
+          },
           legend: {
             position: 'top',
-          }, // Adding label plugin here
+          },
           datalabels: {
             display: true,
             align: 'center',
@@ -84,27 +98,17 @@ export class DisplayOutputGraphComponent implements OnInit {
         .subscribe((data) => {
           const targetPerHour =
             this.storageService.getItem('line_disply_target') / 8;
-          chart.data.labels = data.map(
-            ({ hour }: HourlyEfficiency) => hour + 'h -> ' + (hour + 1) + 'h'
-          );
+          chart.options.plugins.annotation.annotations.line1.yMin =
+            targetPerHour;
+          chart.options.plugins.annotation.annotations.line1.yMax =
+            targetPerHour;
+          chart.options.plugins.annotation.annotations.line1.label.content = `Target: ${targetPerHour}`;
 
-          chart.data.datasets = [
-            {
-              label: 'Output per hour',
-              data: data.map((item: HourlyEfficiency) => item.total_quantity),
-              borderColor: '#ff7614a4',
-              backgroundColor: '#ff7614a4',
-              order: 2,
-            },
-            {
-              label: 'Target per hour',
-              data: [...data.map((_) => targetPerHour), 20],
-              type: 'line',
-              borderColor: 'rgba( 25, 135, 84, 1 )',
-              backgroundColor: 'rgba( 25, 135, 84, 1 )', // this dataset is drawn on top
-              order: 1,
-            },
-          ];
+          chart.data.labels = data.map(
+            (item) => item.hour + 'h -> ' + (item.hour + 1) + 'h'
+          );
+          chart.data.datasets[0].data = data.map((item) => item.total_quantity);
+
           chart.update();
         });
     };
