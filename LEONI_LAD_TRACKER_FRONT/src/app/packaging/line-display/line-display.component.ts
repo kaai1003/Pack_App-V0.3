@@ -21,7 +21,6 @@ import {
   CountBoxPerHourLineDto,
   CountHourLineDto,
   HourProduitsDTO,
-  refQuantityDto,
 } from '../../dtos/Line.dashboard.dto';
 import { StorageService } from '../../services/storage.service';
 import { SegmentService } from '../../services/segment.service';
@@ -32,6 +31,7 @@ import { DisplayTopInfoComponent } from '../components/display-top-info/display-
 import { DisplayEfficiencyGraphComponent } from '../components/display-efficiency-graph/display-efficiency-graph.component';
 import { DisplayOutputGraphComponent } from '../components/display-output-graph/display-output-graph.component';
 import { DisplayOutputPerRefComponent } from '../components/display-output-per-ref/display-output-per-ref.component';
+import { formatDateDashes } from '../../utils/formatDate';
 
 Chart.register(ChartDataLabels);
 
@@ -47,7 +47,7 @@ Chart.register(ChartDataLabels);
     DisplayTopInfoComponent,
     DisplayEfficiencyGraphComponent,
     DisplayOutputGraphComponent,
-    DisplayOutputPerRefComponent
+    DisplayOutputPerRefComponent,
   ],
   templateUrl: './line-display.component.html',
   styleUrl: './line-display.component.css',
@@ -60,8 +60,8 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
   countOfPackagePerHour: CountBoxPerHourLineDto[] = [];
   hourProduits: HourProduitsDTO = new HourProduitsDTO(0, 0, 0, 0);
   filterForm: FormGroup = this.formBuilder.group({
-    from: [this.formatDate(new Date()), Validators.required],
-    to: [this.formatDate(new Date()), Validators.required],
+    from: [formatDateDashes(new Date()), Validators.required],
+    to: [formatDateDashes(new Date()), Validators.required],
   });
   InProgress: number = 0;
   intervalId: any;
@@ -71,8 +71,8 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
     HourlyEfficiency[]
   >([]);
   graphFilters = computed(() => ({
-    from: this.formatDate(this.filterForm.get('from')?.value),
-    to: this.formatDate(this.filterForm.get('to')?.value),
+    from: formatDateDashes(this.filterForm.get('from')?.value),
+    to: formatDateDashes(this.filterForm.get('to')?.value),
     temps_game: this.storageService.getItem('line_disply_rangeTime'),
     vsm: this.storageService.getItem('availible_operators'),
   }));
@@ -146,30 +146,15 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
     }
 
     this.filterForm.patchValue({
-      from: this.formatDate(fromDate),
-      to: this.formatDate(toDate), // shift: this.getCurrentShift(currentHour)
+      from: formatDateDashes(fromDate),
+      to: formatDateDashes(toDate), // shift: this.getCurrentShift(currentHour)
     });
   }
 
-  formatDate(date: any): string {
-    const d = new Date(date);
-    const year = d.getFullYear();
-    const month = ('0' + (d.getMonth() + 1)).slice(-2);
-    const day = ('0' + d.getDate()).slice(-2);
-    const hours = ('0' + d.getHours()).slice(-2);
-    const minutes = ('0' + d.getMinutes()).slice(-2);
-    const seconds = ('0' + d.getSeconds()).slice(-2);
-
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-  }
-
-  /**
-   *
-   */
   getInitData(): void {
     const filters = {
-      from: this.formatDate(this.filterForm.get('from')?.value),
-      to: this.formatDate(this.filterForm.get('to')?.value),
+      from: formatDateDashes(this.filterForm.get('from')?.value),
+      to: formatDateDashes(this.filterForm.get('to')?.value),
       temps_game: this.storageService.getItem('line_disply_rangeTime'),
       vsm: this.storageService.getItem('availible_operators'),
     };
@@ -306,7 +291,7 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
    * @returns expected of to delever
    */
   calculateExpected() {
-    let start = new Date(this.formatDate(this.filterForm.get('from')?.value));
+    let start = new Date(formatDateDashes(this.filterForm.get('from')?.value));
     let to = new Date();
     let hourCoutn = 0;
     do {
