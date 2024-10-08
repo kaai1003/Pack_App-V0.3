@@ -31,15 +31,6 @@ export class DisplayEfficiencyGraphComponent implements OnInit {
             borderColor: 'oklch(0.28 0.1 255.67)',
             tension: 0.1,
           },
-          // {
-          //   type: 'line',
-          //   label: 'Target',
-          //   data: [],
-          //   fill: false,
-          //   fillColor: 'red',
-          //   borderColor: 'green',
-          //   tension: 0.1,
-          // },
         ],
       },
       options: {
@@ -48,6 +39,22 @@ export class DisplayEfficiencyGraphComponent implements OnInit {
         responsive: true,
         maintainAspectRatio: true,
         plugins: {
+          annotation: {
+            annotations: {
+              line1: {
+                type: 'line',
+                yMin: 100,
+                yMax: 100,
+                borderColor: 'green',
+                borderWidth: 2,
+                label: {
+                  backgroundColor: 'green',
+                  content: '100%',
+                  display: true
+                },
+              },
+            },
+          },
           legend: {
             position: 'top',
           }, // Adding label plugin here
@@ -76,7 +83,6 @@ export class DisplayEfficiencyGraphComponent implements OnInit {
             (item) => item.hour + 'h -> ' + (item.hour + 1) + 'h'
           );
           chart.data.datasets[0].data = data.map((item) => item.efficiency);
-          //chart.data.datasets[1].data = data.map((item) => 100);
           chart.update();
         });
     };

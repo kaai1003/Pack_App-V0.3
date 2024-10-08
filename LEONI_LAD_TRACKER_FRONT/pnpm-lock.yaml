@@ -44,6 +44,9 @@ importers:
       chartjs-gauge:
         specifier: ^0.3.0
         version: 0.3.0
+      chartjs-plugin-annotation:
+        specifier: ^3.0.1
+        version: 3.0.1(chart.js@4.4.4)
       chartjs-plugin-datalabels:
         specifier: ^2.2.0
         version: 2.2.0(chart.js@4.4.4)
@@ -1897,6 +1900,11 @@ packages:
 
   chartjs-gauge@0.3.0:
     resolution: {integrity: sha512-/R5N4Q/N3GobAuU+jVli72FAX7rYy7N6I166ZYNyW3KzkRVqMls1qjuPmcbHXmL5XffNvp6kSZ13C5TmT7lJIQ==}
+
+  chartjs-plugin-annotation@3.0.1:
+    resolution: {integrity: sha512-hlIrXXKqSDgb+ZjVYHefmlZUXK8KbkCPiynSVrTb/HjTMkT62cOInaT1NTQCKtxKKOm9oHp958DY3RTAFKtkHg==}
+    peerDependencies:
+      chart.js: '>=4.0.0'
 
   chartjs-plugin-datalabels@2.2.0:
     resolution: {integrity: sha512-14ZU30lH7n89oq+A4bWaJPnAG8a7ZTk7dKf48YAzMvJjQtjrgg5Dpk9f+LbjCF6bpx3RAGTeL13IXpKQYyRvlw==}
@@ -6713,6 +6721,10 @@ snapshots:
   chartjs-gauge@0.3.0:
     dependencies:
       chart.js: 2.9.4
+
+  chartjs-plugin-annotation@3.0.1(chart.js@4.4.4):
+    dependencies:
+      chart.js: 4.4.4
 
   chartjs-plugin-datalabels@2.2.0(chart.js@4.4.4):
     dependencies:
