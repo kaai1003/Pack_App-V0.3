@@ -63,7 +63,6 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
     from: [this.formatDate(new Date()), Validators.required],
     to: [this.formatDate(new Date()), Validators.required],
   });
-  countFxPerRef: refQuantityDto[] = [];
   InProgress: number = 0;
   intervalId: any;
   line: BehaviorSubject<string> = new BehaviorSubject<string>('');
@@ -103,26 +102,8 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
         this.router.navigate([this.router.url]).then(() => {
           // Set the page to
           this.countFxPerHour;
-          this.requestFullscreen();
         });
       });
-  }
-
-  // Request fullscreen mode
-  requestFullscreen() {
-    const element = document.documentElement; // Get the full page element
-    if (element.requestFullscreen) {
-      element.requestFullscreen();
-    } else if (element.requestFullscreen) {
-      // Firefox
-      element.requestFullscreen();
-    } else if (element.requestFullscreen) {
-      // Chrome, Safari and Opera
-      element.requestFullscreen();
-    } else if (element.requestFullscreen) {
-      // IE/Edge
-      element.requestFullscreen();
-    }
   }
 
   // Clear the interval when the component is destroyed
@@ -243,15 +224,6 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.lineDashboardService.getCountByCodeFournisseur(filters).subscribe(
-      (data: any) => {
-        this.countFxPerRef = data;
-      },
-      (error) => {
-        console.error('Error fetching hourly quantity:', error);
-      }
-    );
-
     this.lineDashboardService.getInProgressQantity(filters).subscribe(
       (data: any) => {
         this.InProgress = data.total_quantity;
@@ -287,30 +259,6 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
   onFilter() {
     this.getInitData();
   }
-
-  /**
-   * this function provid us to calculate efficiency
-   * @returns
-   */
-  // calculateEfficiency(): number {
-  //   // Implement efficiency calculation logic based on totalQuantity and any other relevant data
-  //   const rangeTime = this.storageService.getItem("line_disply_rangeTime")
-  //   const operators = this.storageService.getItem("line_disply_operatores")
-  //   let start = new Date(this.formatDate(this.filterForm.get('from')?.value))
-  //   let to = new Date()
-  //   let postedHours = 0;
-  //   let hours = 0;
-  //   do {
-  //     hours++
-  //     postedHours++
-  //     start.setHours(start.getHours() + 1)
-  //   } while (hours < 8)
-  //   // if(this.storageService.getItem('line_disply_efficiency') === 1){
-  //   //   return ((this.totalQuantity * rangeTime)/(operators * hours)) * 100;
-  //   // }else{
-  //   return ((this.totalQuantity) / (this.storageService.getItem('line_disply_target'))) * 100;
-  //   // }
-  // }
 
   openDialog(): void {
     this.dialog.open(LineDisplayDialogComponent, {
