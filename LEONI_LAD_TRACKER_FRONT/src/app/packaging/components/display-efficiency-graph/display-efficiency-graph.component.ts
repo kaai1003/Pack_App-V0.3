@@ -49,7 +49,7 @@ export class DisplayEfficiencyGraphComponent implements OnInit {
                 borderWidth: 2,
                 label: {
                   backgroundColor: 'green',
-                  content: '100%',
+                  content: 'Target: 100%',
                   display: true
                 },
               },
