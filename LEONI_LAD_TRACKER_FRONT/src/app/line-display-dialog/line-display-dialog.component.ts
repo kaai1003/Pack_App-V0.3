@@ -35,8 +35,8 @@ export class LineDisplayDialogComponent implements OnInit {
         this.storageService.getItem('line_disply_operatores'),
         Validators.required
       ],
-      line_disply_rangeTime: [
-        this.storageService.getItem('line_disply_rangeTime'),
+      line_display_rangeTime: [
+        this.storageService.getItem('line_display_rangeTime'),
         Validators.required
       ],
       line_disply_target: [
@@ -56,11 +56,11 @@ export class LineDisplayDialogComponent implements OnInit {
 
   updateData() {
     if (this.confForm.valid) {
-      const rangeTimeValue = this.confForm.get('line_disply_rangeTime')?.value;
+      const rangeTimeValue = this.confForm.get('line_display_rangeTime')?.value;
       const operatorsValue = this.confForm.get('line_disply_operatores')?.value;
       const efficiency = parseInt(this.confForm.get('line_disply_efficiency')?.value);
       const target = this.confForm.get('line_disply_target')?.value;
-      this.storageService.setItem('line_disply_rangeTime', rangeTimeValue);
+      this.storageService.setItem('line_display_rangeTime', rangeTimeValue);
       this.storageService.setItem('line_disply_operatores', operatorsValue);
       this.storageService.setItem('line_disply_target', target);
       this.storageService.setItem('line_disply_efficiency', efficiency);

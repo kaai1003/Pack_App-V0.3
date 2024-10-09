@@ -18,11 +18,11 @@
         <label class="form-label blue-color" for="line_disply_operatores">Present Operators</label>
         <input
           class="form-control"
-          formControlName="availible_operators"
-          id="availible_operators"
+          formControlName="available_operators"
+          id="available_operators"
           type="number"
         />
-        <div *ngIf="confForm.get('availible_operators')?.invalid && confForm.get('availible_operators')?.touched">
+        <div *ngIf="confForm.get('available_operators')?.invalid && confForm.get('available_operators')?.touched">
           <small class="text-danger">Team leader are required</small>
         </div>
       </div>
@@ -39,17 +39,17 @@
         </div>
       </div>
       <div class="mb-3">
-        <label class="form-label blue-color" for="line_disply_rangeTime"
+        <label class="form-label blue-color" for="line_display_rangeTime"
         >Standard time (hour)<sup>Fx/(Hour)</sup></label
         >
         <input
           class="form-control blue-color"
-          formControlName="line_disply_rangeTime"
-          id="line_disply_rangeTime"
+          formControlName="line_display_rangeTime"
+          id="line_display_rangeTime"
           step="0.1"
           type="number"
         />
-        <div *ngIf="confForm.get('line_disply_rangeTime')?.invalid && confForm.get('line_disply_rangeTime')?.touched">
+        <div *ngIf="confForm.get('line_display_rangeTime')?.invalid && confForm.get('line_display_rangeTime')?.touched">
           <small class="text-danger">Standard time is required</small>
         </div>
       </div>

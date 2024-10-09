@@ -214,7 +214,7 @@ export class LineDisplayComponent implements OnInit {
    */
   calculateEfficiency(): number {
     // Implement efficiency calculation logic based on totalQuantity and any other relevant data
-    const rangeTime = this.storageService.getItem("line_disply_rangeTime")
+    const rangeTime = this.storageService.getItem("line_display_rangeTime")
     const operators = this.storageService.getItem("line_disply_operatores") 
     let start = new Date(this.formatDate(this.filterForm.get('from')?.value))
     let to = new Date()

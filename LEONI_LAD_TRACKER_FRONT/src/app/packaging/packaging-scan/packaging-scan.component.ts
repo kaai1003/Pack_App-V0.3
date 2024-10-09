@@ -206,7 +206,7 @@ export class PackagingScanComponent implements OnInit, AfterViewInit {
     const filters = {
       from: this.formatDate(this.filterForm.get('from')?.value),
       to: this.formatDate(this.filterForm.get('to')?.value),
-      temps_game: this.storageService.getItem('line_disply_rangeTime')
+      temps_game: this.storageService.getItem('line_display_rangeTime')
     }
     this.lineDashboardService.getQuantityByHour(filters).subscribe((data: any) => {
       this.countFxPerHour = data

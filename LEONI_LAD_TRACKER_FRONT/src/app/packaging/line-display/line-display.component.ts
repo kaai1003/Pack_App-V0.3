@@ -37,8 +37,8 @@ export class LineDisplayComponent implements OnInit {
   graphFilters = computed(() => ({
     from: formatDateDashes(this.filterForm.get('from')?.value),
     to: formatDateDashes(this.filterForm.get('to')?.value),
-    temps_game: this.storageService.getItem('line_disply_rangeTime'),
-    vsm: this.storageService.getItem('availible_operators'),
+    temps_game: this.storageService.getItem('line_display_rangeTime'),
+    vsm: this.storageService.getItem('available_operators'),
   }));
 
   constructor(

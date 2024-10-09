@@ -22,13 +22,13 @@ export class LineDisplayDialogComponent implements OnInit {
   constructor(private formBuilder: FormBuilder, private storageService: StorageService, private snackBar: MatSnackBar, public dialogRef: MatDialogRef<LineDisplayDialogComponent>) {
     this.confForm = this.formBuilder.group({
       line_disply_operatores: [this.storageService.getItem('line_disply_operatores'), Validators.required],
-      line_disply_rangeTime: [this.storageService.getItem('line_disply_rangeTime'), Validators.required],
+      line_display_rangeTime: [this.storageService.getItem('line_display_rangeTime'), Validators.required],
       line_disply_target: [this.storageService.getItem('line_disply_target'), Validators.required], // line_disply_efficiency: [
       //   this.storageService.getItem('line_disply_efficiency'),
       //   Validators.required
       // ],
       team_leader: [this.storageService.getItem('team_leader'), Validators.required],
-      availible_operators: [this.storageService.getItem('availible_operators'), Validators.required]
+      available_operators: [this.storageService.getItem('available_operators'), Validators.required]
     });
   }
 
@@ -38,18 +38,18 @@ export class LineDisplayDialogComponent implements OnInit {
 
   updateData() {
     if (this.confForm.valid) {
-      const rangeTimeValue = this.confForm.get('line_disply_rangeTime')?.value;
+      const rangeTimeValue = this.confForm.get('line_display_rangeTime')?.value;
       const operatorsValue = this.confForm.get('line_disply_operatores')?.value;
       const teamLeader = this.confForm.get('team_leader')?.value;
-      const presentOperator = this.confForm.get('availible_operators')?.value;
+      const presentOperator = this.confForm.get('available_operators')?.value;
       const efficiency = parseInt(this.confForm.get('line_disply_efficiency')?.value);
       const target = this.confForm.get('line_disply_target')?.value;
-      this.storageService.setItem('line_disply_rangeTime', rangeTimeValue);
+      this.storageService.setItem('line_display_rangeTime', rangeTimeValue);
       this.storageService.setItem('line_disply_operatores', operatorsValue);
       this.storageService.setItem('line_disply_target', target);
       this.storageService.setItem('line_disply_efficiency', efficiency);
       this.storageService.setItem('team_leader', teamLeader)
-      this.storageService.setItem('availible_operators', presentOperator)
+      this.storageService.setItem('available_operators', presentOperator)
       this.dialogRef.close();
     } else {
       this.logFormErrors();
