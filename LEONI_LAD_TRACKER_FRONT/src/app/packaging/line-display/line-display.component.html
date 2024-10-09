@@ -2,38 +2,33 @@
   <main class="container-fluid my-auto h-100">
     <app-display-top-info />
     <app-display-top-cards [filters]="graphFilters" />
-    <section class="container-fluid mt-4 px-3" style="transform: scale(1.5rem)">
-      <div class="row bk-glass-blue d-flex justify-content-around"></div>
-      <!-- Remove this -->
-      <div class="row bk-glass-blue d-flex justify-content-around">
-        <!-- END: Remove this -->
-
-        <!-- HarnessLeftGraph -->
-        <mat-card class="col-lg-6 white-glass shadow-sm">
-          <app-display-efficiency-graph [filters]="graphFilters" />
-        </mat-card>
-
-        <!-- HarnessRightGraph -->
-        <mat-card class="col-lg-6 white-glass shadow-sm">
-          <app-display-output-graph [filters]="graphFilters" />
-        </mat-card>
-      </div>
+    <section
+      class="container-fluid mt-4 px-5 row d-flex justify-content-around gap-4"
+    >
+      <mat-card class="col-lg-6 row">
+        <app-display-efficiency-graph [filters]="graphFilters" />
+      </mat-card>
+      <mat-card class="col-lg-6 row">
+        <app-display-output-graph [filters]="graphFilters" />
+      </mat-card>
     </section>
 
-    <section class="container-fluid mt-4 px-5">
-      <div class="row d-flex justify-content-around">
-        <div class="col-6">
-          <app-display-efficiency-gauge [filters]="graphFilters" />
-        </div>
-        <div class="white-glass col-lg-6 row justify-content-around">
-          <app-display-output-per-ref [filters]="graphFilters" />
-        </div>
-      </div>
+    <section
+      class="container-fluid mt-4 px-5 row d-flex justify-content-around gap-4"
+    >
+      <mat-card class="col-lg-6 row">
+        <app-display-efficiency-gauge [filters]="graphFilters" />
+      </mat-card>
+      <mat-card class="col-lg-6 row">
+        <app-display-output-per-ref [filters]="graphFilters" />
+      </mat-card>
     </section>
-    <footer class="container-fluid mt-3">
+
+    <footer class="container-fluid mt-1">
       <p class="blue-color">
-        Created by<span class="orange-color">
-          <a href="https://www.leoni.com/">Leoni, Berrechid.</a></span
+        Created by
+        <a style="text-decoration: none" href="https://www.leoni.com/"
+          >Leoni, Berrechid.</a
         >
         © 2024-2025
       </p>

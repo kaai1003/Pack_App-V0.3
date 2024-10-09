@@ -1,9 +1,16 @@
-<mat-card class="blue-color text-center fw-light">
-  <mat-card-title class="text-center">Shift Efficiency</mat-card-title>
-  <mat-card-content class="my-auto mt-2">
-    <canvas id="EfficiencyGauge" style="height: auto;max-height:200px;"></canvas>
-    <h1 class="text-center" style="position:absolute;left:0;right:0;bottom:0.5em;transform: scale(1.3);">
-      {{ efficiency() | number : "1.2-2" }} %
-    </h1>
-  </mat-card-content>
-</mat-card>
+<mat-card-title class="text-center mt-2">Shift Efficiency</mat-card-title>
+<mat-card-content class="my-auto mt-2">
+  <canvas id="EfficiencyGauge" style="height: auto; max-height: 200px"></canvas>
+  <h1
+    class="text-center"
+    style="
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0.5em;
+      transform: scale(1.3);
+    "
+  >
+    {{ efficiency() | number : "1.2-2" }} %
+  </h1>
+</mat-card-content>
