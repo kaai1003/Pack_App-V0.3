@@ -26,7 +26,7 @@ export class DisplayTopCardsComponent implements OnInit {
     const update = () => {
       let filters = this.filters();
       let from = new Date(filters.from);
-      let hoursCount = new Date().getHours() - from.getHours() + 1;
+      let hoursCount = new Date().getHours() - from.getHours();
       this.expected.set(
         (this.storageService.getItem('line_disply_target') * hoursCount) / 8
       );

@@ -1,31 +1,8 @@
-import { Component, computed, OnDestroy, OnInit } from '@angular/core';
-import { BaseChartDirective } from 'ng2-charts';
+import { Component, computed, OnInit } from '@angular/core';
 import Chart from 'chart.js/auto';
 import { MatCardModule } from '@angular/material/card';
-import { Router, RouterOutlet } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-import {
-  HourlyEfficiency,
-  LineDashboardService,
-} from '../../services/line.dashboard';
-import { MatDialog } from '@angular/material/dialog';
-import { LineDisplayDialogComponent } from '../line-display-dialog/line-display-dialog.component';
-import {
-  BoxCount,
-  CountBoxPerHourLineDto,
-  CountHourLineDto,
-  HourProduitsDTO,
-} from '../../dtos/Line.dashboard.dto';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { StorageService } from '../../services/storage.service';
-import { SegmentService } from '../../services/segment.service';
-import { ProductionLineService } from '../../services/production.line.service';
-import { BehaviorSubject } from 'rxjs';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { DisplayTopInfoComponent } from '../components/display-top-info/display-top-info.component';
 import { DisplayEfficiencyGraphComponent } from '../components/display-efficiency-graph/display-efficiency-graph.component';
@@ -41,11 +18,7 @@ Chart.register(ChartDataLabels);
   selector: 'app-line-display',
   standalone: true,
   imports: [
-    BaseChartDirective,
     MatCardModule,
-    ReactiveFormsModule,
-    RouterOutlet,
-    CommonModule,
     DisplayTopInfoComponent,
     DisplayEfficiencyGraphComponent,
     DisplayOutputGraphComponent,
@@ -56,24 +29,11 @@ Chart.register(ChartDataLabels);
   templateUrl: './line-display.component.html',
   styleUrl: './line-display.component.css',
 })
-export class LineDisplayComponent implements OnInit, OnDestroy {
-  totalQuantity: number = 0;
-  countPackages: number = 0;
-  efficiency: BehaviorSubject<number> = new BehaviorSubject<number>(0);
-  countFxPerHour: CountHourLineDto[] = [];
-  countOfPackagePerHour: CountBoxPerHourLineDto[] = [];
-  hourProduits: HourProduitsDTO = new HourProduitsDTO(0, 0, 0, 0);
+export class LineDisplayComponent implements OnInit {
   filterForm: FormGroup = this.formBuilder.group({
     from: [formatDateDashes(new Date()), Validators.required],
     to: [formatDateDashes(new Date()), Validators.required],
   });
-  InProgress: number = 0;
-  intervalId: any;
-  line: BehaviorSubject<string> = new BehaviorSubject<string>('');
-  project: BehaviorSubject<string> = new BehaviorSubject<string>('');
-  efficiencyPerHour: BehaviorSubject<HourlyEfficiency[]> = new BehaviorSubject<
-    HourlyEfficiency[]
-  >([]);
   graphFilters = computed(() => ({
     from: formatDateDashes(this.filterForm.get('from')?.value),
     to: formatDateDashes(this.filterForm.get('to')?.value),
@@ -83,38 +43,13 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
 
   constructor(
     private formBuilder: FormBuilder,
-    private lineDashboardService: LineDashboardService,
-    public dialog: MatDialog,
-    public storageService: StorageService,
-    public router: Router,
-    private SegemntService: SegmentService,
-    private productionLineService: ProductionLineService
+    public storageService: StorageService
   ) {}
 
   ngOnInit() {
+    // Update filter dates every 10min
+    setInterval(this.setDefaultDates, 10 * 60 * 1000);
     this.setDefaultDates();
-    this.getInitData();
-    setInterval(() => {
-      this.reloadCurrentPage();
-    }, 3000); // 3 seconds
-  }
-
-  reloadCurrentPage() {
-    this.router
-      .navigateByUrl('/packaging/report', { skipLocationChange: true })
-      .then(() => {
-        this.router.navigate([this.router.url]).then(() => {
-          // Set the page to
-          this.countFxPerHour;
-        });
-      });
-  }
-
-  // Clear the interval when the component is destroyed
-  ngOnDestroy(): void {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-    }
   }
 
   setDefaultDates() {
@@ -153,169 +88,5 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
       from: formatDateDashes(fromDate),
       to: formatDateDashes(toDate), // shift: this.getCurrentShift(currentHour)
     });
-  }
-
-  getInitData(): void {
-    const filters = {
-      from: formatDateDashes(this.filterForm.get('from')?.value),
-      to: formatDateDashes(this.filterForm.get('to')?.value),
-      temps_game: this.storageService.getItem('line_disply_rangeTime'),
-      vsm: this.storageService.getItem('availible_operators'),
-    };
-
-    this.lineDashboardService.getBoxCount(filters).subscribe(
-      (data: BoxCount) => {
-        this.countPackages = data.box_count;
-        // Update other data and charts as needed
-      },
-      (error) => {
-        console.error('Error fetching total quantity:', error);
-      }
-    );
-
-    this.lineDashboardService.getEfficiency(filters).subscribe(
-      (data: any) => {
-        // alert(data)
-        this.efficiency.next(data.average_efficiency);
-        // Update other data and charts as needed
-      },
-      (error) => {
-        console.error('Error fetching total efficiency:', error);
-      }
-    );
-
-    this.lineDashboardService.getCountOfPackageByHour(filters).subscribe(
-      (data: any) => {
-        this.countOfPackagePerHour = data;
-        // Update other data and charts as needed
-      },
-      (error) => {
-        console.error('Error fetching total quantity:', error);
-      }
-    );
-
-    this.lineDashboardService.getHourProduitsDTO(filters).subscribe(
-      (data: any) => {
-        this.hourProduits = data;
-        // Update other data and charts as needed
-      },
-      (error) => {
-        console.error('Error fetching total quantity:', error);
-      }
-    );
-
-    this.lineDashboardService.getQuantityByHour(filters).subscribe(
-      (data: any) => {
-        this.countFxPerHour = data;
-      },
-      (error) => {
-        console.error('Error fetching hourly quantity:', error);
-      }
-    );
-
-    this.lineDashboardService.getInProgressQantity(filters).subscribe(
-      (data: any) => {
-        this.InProgress = data.total_quantity;
-      },
-      (error) => {
-        console.error(':', error);
-      }
-    );
-    this.lineDashboardService.getEfficiencyByHour(filters).subscribe(
-      (data: any) => {
-        this.efficiencyPerHour.next(data);
-      },
-      (error) => {
-        console.error(':', error);
-      }
-    );
-
-    this.lineDashboardService.getTotalQuantity(filters).subscribe(
-      (data: any) => {
-        this.totalQuantity = data.total_quantity;
-        // Update other data and charts as needed
-      },
-      (error) => {
-        console.error('Error fetching total quantity:', error);
-      }
-    );
-
-    setTimeout(() => {
-      this.onFilter();
-    }, 5000);
-  }
-
-  onFilter() {
-    this.getInitData();
-  }
-
-  openDialog(): void {
-    this.dialog.open(LineDisplayDialogComponent, {
-      width: '50%',
-      data: {
-        /* pass any data here if needed */
-      },
-    });
-  }
-
-  getEcartColorAndArrow(): { colorClass: string; arrow: string } {
-    const ecart = this.calculateExpected() - this.totalQuantity;
-    if (ecart > 0) {
-      return { colorClass: 'text-danger fw-bold', arrow: '↓' };
-    } else if (ecart < 0) {
-      return { colorClass: 'text-success fw-bold', arrow: '↑' };
-    } else {
-      return { colorClass: '', arrow: '' }; // Default or no change needed
-    }
-  }
-
-  /**
-   * print the report
-   */
-  printReport(): void {
-    window.print();
-  }
-
-  /**
-   *
-   * @returns target in line
-   */
-  getOpbjectif(): number {
-    // const rangeTime = this.storageService.getItem("rangeTime")
-    // const operators = this.storageService.getItem("operatores")
-    const gole = this.storageService.getItem('line_disply_target')
-      ? this.storageService.getItem('line_disply_target')
-      : 0;
-    // let objectif = (operators * this.hourProduits.posted_hours) / rangeTime
-    return parseInt(gole);
-  }
-
-  /**
-   *
-   * @returns expected of to delever
-   */
-  calculateExpected() {
-    let start = new Date(formatDateDashes(this.filterForm.get('from')?.value));
-    let to = new Date();
-    let hourCoutn = 0;
-    do {
-      hourCoutn++;
-      start.setHours(start.getHours() + 1);
-    } while (start < to);
-
-    return (this.storageService.getItem('line_disply_target') / 8) * hourCoutn;
-  }
-
-  getDeliveredClass() {
-    //  return this.totalQuantity >= this.calculateExpected() ? ' text-success': 'text-danger';
-    return this.totalQuantity >= this.calculateExpected()
-      ? ' success-glass'
-      : 'success-glass';
-  }
-
-  getFormattedDifference(): string {
-    const difference = this.totalQuantity - this.calculateExpected();
-    const formattedDifference = difference.toFixed(0); // Ensure one decimal place
-    return difference > 0 ? `${formattedDifference}` : `${formattedDifference}`;
   }
 }
