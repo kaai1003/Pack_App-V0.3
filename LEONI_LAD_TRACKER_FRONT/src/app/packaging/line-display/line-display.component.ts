@@ -33,6 +33,7 @@ import { DisplayOutputGraphComponent } from '../components/display-output-graph/
 import { DisplayOutputPerRefComponent } from '../components/display-output-per-ref/display-output-per-ref.component';
 import { formatDateDashes } from '../../utils/formatDate';
 import { DisplayEfficiencyGaugeComponent } from '../components/display-efficiency-gauge/display-efficiency-gauge.component';
+import { DisplayTopCardsComponent } from '../components/display-top-cards/display-top-cards.component';
 
 Chart.register(ChartDataLabels);
 
@@ -50,6 +51,7 @@ Chart.register(ChartDataLabels);
     DisplayOutputGraphComponent,
     DisplayOutputPerRefComponent,
     DisplayEfficiencyGaugeComponent,
+    DisplayTopCardsComponent,
   ],
   templateUrl: './line-display.component.html',
   styleUrl: './line-display.component.css',
@@ -297,9 +299,6 @@ export class LineDisplayComponent implements OnInit, OnDestroy {
     let to = new Date();
     let hourCoutn = 0;
     do {
-      let hourInApiHours = this.countFxPerHour.find(
-        (hour) => hour.hour == start.getHours()
-      );
       hourCoutn++;
       start.setHours(start.getHours() + 1);
     } while (start < to);

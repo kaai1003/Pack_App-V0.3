@@ -99,8 +99,6 @@ export class LineDisplayComponent implements OnInit {
       // shift: this.getCurrentShift(currentHour)
     });
   }
-  
-  
 
   formatDate(date: any): string {
     const d = new Date(date);

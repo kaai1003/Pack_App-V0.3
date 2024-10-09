@@ -1,73 +1,7 @@
 <div class="h-100">
   <main class="container-fluid my-auto h-100">
     <app-display-top-info />
-    <section class="col-12 mt-3">
-      <div class="row d-flex justify-content-around">
-        <mat-card class="col-lg-2 primary-glass text-white">
-          <mat-card-title class="text-center"> Shift Target </mat-card-title>
-          <mat-card-content>
-            <h1
-              class="text-center fw-blod m-2 p-3"
-              style="transform: scale(2)"
-            >
-              {{ getOpbjectif() }}
-            </h1>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card class="col-lg-2 text-white info-glass">
-          <mat-card-title class="text-center"> Expected </mat-card-title>
-          <mat-card-content>
-            <h1 class="text-center m-2 p-3" style="transform: scale(2)">
-              {{ calculateExpected() | number : "1.0-0" }}
-            </h1>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card [class]="getDeliveredClass()" class="col-lg-2 text-white">
-          <mat-card-title class="text-center"> Delivered </mat-card-title>
-          <mat-card-content>
-            <h1
-              class="text-center fw-blod m-2 p-3"
-              style="transform: scale(2)"
-            >
-              {{ totalQuantity ? totalQuantity : 0 }}
-            </h1>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card class="col-lg-2 warning-glass text-white">
-          <mat-card-title class="text-center"> Gap </mat-card-title>
-          <mat-card-content>
-            <h1 class="text-center m-2 p-3" style="transform: scale(2)">
-              <span
-                *ngIf="getEcartColorAndArrow().arrow"
-                [ngClass]="getEcartColorAndArrow().colorClass"
-                class=""
-              >
-                {{ getFormattedDifference() }}
-                {{ getEcartColorAndArrow().arrow }}
-              </span>
-            </h1>
-          </mat-card-content>
-        </mat-card>
-
-        <!-- <mat-card class="col-lg-2 white-glass">
-          <mat-card-title class="blue-color text-center">
-            In progress
-          </mat-card-title>
-          <mat-card-content>
-            <h1
-              class="text-center fw-blod orange-color m-2 p-3"
-              style="transform: scale(1.3)"
-            >
-              {{ InProgress ? InProgress : 0 }}
-            </h1>
-          </mat-card-content>
-        </mat-card> -->
-      </div>
-    </section>
-
+    <app-display-top-cards [filters]="graphFilters" />
     <section class="container-fluid mt-4 px-3" style="transform: scale(1.5rem)">
       <div class="row bk-glass-blue d-flex justify-content-around"></div>
       <!-- Remove this -->
@@ -101,7 +35,7 @@
         Created by<span class="orange-color">
           <a href="https://www.leoni.com/">Leoni, Berrechid.</a></span
         >
-        © 2024–2025
+        © 2024-2025
       </p>
     </footer>
   </main>

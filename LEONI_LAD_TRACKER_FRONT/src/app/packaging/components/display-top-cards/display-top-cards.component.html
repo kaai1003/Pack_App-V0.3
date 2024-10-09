@@ -1,0 +1,43 @@
+<div class="row d-flex justify-content-around">
+  <mat-card class="col-lg-2 primary-glass text-white">
+    <mat-card-title class="text-center">Shift Target</mat-card-title>
+    <mat-card-content>
+      <h1 class="text-center fw-blod m-2 p-3" style="transform: scale(2)">
+        {{ this.storageService.getItem("line_disply_target") }}
+      </h1>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="col-lg-2 text-white info-glass">
+    <mat-card-title class="text-center">Expected</mat-card-title>
+    <mat-card-content>
+      <h1 class="text-center m-2 p-3" style="transform: scale(2)">
+        {{ expected() | number : "1.0-0" }}
+      </h1>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="col-lg-2 text-white success-glass">
+    <mat-card-title class="text-center">Delivered</mat-card-title>
+    <mat-card-content>
+      <h1 class="text-center fw-blod m-2 p-3" style="transform: scale(2)">
+        {{ totalQuantity() }}
+      </h1>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="col-lg-2 warning-glass text-white">
+    <mat-card-title class="text-center">Gap</mat-card-title>
+    <mat-card-content>
+      <h1 class="text-center m-2 p-3" style="transform: scale(2)">
+        <span *ngIf="gap() < 0" class="text-danger fw-bold">
+          {{ gap() | number : "1.0-0" }} ↓
+        </span>
+        <span *ngIf="gap() > 0" class="text-success fw-bold">
+          {{ gap() | number : "1.0-0" }} ↑
+        </span>
+        <span *ngIf="gap() == 0" class="text-success fw-bold"> 0 </span>
+      </h1>
+    </mat-card-content>
+  </mat-card>
+</div>
