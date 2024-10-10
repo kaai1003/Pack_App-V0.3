@@ -1,0 +1,130 @@
+<div class="h-100">
+  <main class="container-fluid my-auto h-100">
+    <div class="row my-auto">
+      <div class="col-lg-12 fw-blod mb-1 py-auto">
+        <div class="card-body py-3 d-flex gap-4 justify-content-around align-items-center">
+          <mat-form-field>
+            <mat-label>Selected Day</mat-label>
+            <input
+              readonly
+              matInput
+              [matDatepicker]="picker"
+              [(ngModel)]="selectedDay"
+            />
+            <mat-datepicker-toggle matIconSuffix [for]="picker" />
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Start Hour</mat-label>
+            <input
+              type="number"
+              matInput
+              [(ngModel)]="startHour"
+              min="0"
+              max="23"
+            />
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>End Hour</mat-label>
+            <input
+              type="number"
+              matInput
+              [(ngModel)]="endHour"
+              min="0"
+              max="23"
+            />
+          </mat-form-field>
+        <!-- </div>
+        <div class="card-body py-3 d-flex justify-content-around"> -->
+          <h4
+            class="text-center light-blue-color d-flex fw-blod justify-content-around my-auto white-glass p-2"
+          >
+            <span class="blue-color">TL:</span>
+            <span class="orange-color mx-1 fw-blod"
+              >{{ storageService.getItem("team_leader") }}
+            </span>
+          </h4>
+
+          <h4
+            class="text-center light-blue-color d-flex justify-content-around my-auto white-glass p-2"
+          >
+            <span class="blue-color">Project : </span>
+            <span class="mx-1 orange-color">
+              {{ storageService.getItem("currentProjectName") }}</span
+            >
+          </h4>
+          <h4
+            class="text-center light-blue-color d-flex justify-content-around my-auto white-glass p-2"
+          >
+            <span class="blue-color">Line :</span>
+            <span class="orange-color mx-1">{{
+              storageService.getItem("CurrentLineName")
+            }}</span>
+          </h4>
+          <h4
+            class="text-center bg-primary text-white light-blue-color d-flex justify-content-around my-auto white-glass p-2"
+          >
+            <span class="">Target:</span>
+            <span class="mx-2">{{
+              storageService.getItem("line_disply_operatores")
+            }}</span>
+          </h4>
+          <h4
+            class="text-center text-white bg-success light-blue-color d-flex justify-content-around my-auto white-glass p-2"
+          >
+            <span class="">Present:</span>
+            <span class="mx-2">{{
+              storageService.getItem("available_operators")
+            }}</span>
+          </h4>
+          <h4
+            class="text-center bg-danger text-white light-blue-color d-flex justify-content-around my-auto white-glass p-2"
+          >
+            <span class="">Absence:</span>
+            <span class="mx-2">{{
+              storageService.getItem("line_disply_operatores") -
+                storageService.getItem("available_operators")
+            }}</span>
+          </h4>
+          <!-- <h4 class="text-center light-blue-color d-flex justify-content-around  my-auto white-glass p-2">
+                    <span class="fw-bold mx-auto  blue-color"> {{ currentTime | date: 'dd/MM/yyyy HH:mm:ss' }} </span>
+                </h4> -->
+        </div>
+      </div>
+    </div>
+    <app-display-top-cards [filters]="graphFilters" />
+    <section
+      class="container-fluid mt-4 px-5 row d-flex justify-content-around gap-4"
+    >
+      <mat-card class="col-lg-6 row">
+        <app-display-efficiency-graph [filters]="graphFilters" />
+      </mat-card>
+      <mat-card class="col-lg-6 row">
+        <app-display-output-graph [filters]="graphFilters" />
+      </mat-card>
+    </section>
+
+    <section
+      class="container-fluid mt-4 px-5 row d-flex justify-content-around gap-4"
+    >
+      <mat-card class="col-lg-6 row">
+        <app-display-efficiency-gauge [filters]="graphFilters" />
+      </mat-card>
+      <mat-card class="col-lg-6 row">
+        <app-display-output-per-ref [filters]="graphFilters" />
+      </mat-card>
+    </section>
+
+    <footer class="container-fluid mt-1">
+      <p class="blue-color">
+        Created by
+        <a style="text-decoration: none" href="https://www.leoni.com/"
+          >Leoni, Berrechid.</a
+        >
+        © 2024-2025
+      </p>
+    </footer>
+  </main>
+</div>

@@ -7,13 +7,15 @@ import { PackagingStartComponent } from './packaging-start/packaging-start.compo
 import { PackagingSettingsComponent } from './packaging-settings/packaging-settings.component';
 import { PackagingDataComponent } from './packaging-data/packaging-data.component';
 import { PackagingProcessCreateComponent } from './packaging-process-create/packaging-process-create.component';
+import { LineReportComponent } from './line-report/line-report.component';
 
 
 const routes: Routes = [
   {path: '', component: PackagingIndexComponent,children:[
       {path:'scan', component: PackagingScanComponent},
       {path:'start', component: PackagingStartComponent},
-      {path:'report', component: LineDisplayComponent},
+      {path:'display', component: LineDisplayComponent},
+      {path:'report', component: LineReportComponent},
       {path:'settings', component: PackagingSettingsComponent},
       {path:'data', component: PackagingDataComponent},
       {path:'create-process', component: PackagingProcessCreateComponent}
