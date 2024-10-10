@@ -1,0 +1,2 @@
+cd LEONI_LAD_TRACKER_FRONT
+npm start
