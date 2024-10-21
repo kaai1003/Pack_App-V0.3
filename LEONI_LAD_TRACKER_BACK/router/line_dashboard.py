@@ -1,3 +1,4 @@
+from typing import List
 from flask import Blueprint, request, jsonify
 from datetime import datetime, timedelta
 
@@ -5,6 +6,7 @@ from database import db
 from models.harness import HarnessModel
 from models.packaging_box import PackagingBox
 from models.prod_harness import ProdHarness
+from sqlalchemy.engine.row import Row
 
 line_dashboard_bp = Blueprint('line_dashboard_bp', __name__)
 
@@ -328,15 +330,11 @@ def quantity_by_month():
 def efficiency_by_hour():
     try:
         filters = request.json
-        vsm = filters.get('vsm')  # Number of operators
-        temps_game = filters.get('temps_game')  # Default value if not provided
-
-        if not vsm or vsm <= 0:
-            return jsonify({'error': 'vsm (number of operators) is required and should be greater than 0'}), 400
-
         from_date = filters.get('from')
         to_date = filters.get('to')
-
+        vsm = filters.get('vsm')  # Number of operators
+        if not vsm or vsm <= 0:
+            return jsonify({'error': 'vsm (number of operators) is required and should be greater than 0'}), 400
         if not from_date or not to_date:
             return jsonify({'error': 'Both "from" and "to" dates are required'}), 400
 
@@ -351,53 +349,17 @@ def efficiency_by_hour():
         ).join(HarnessModel, ProdHarness.harness_id == HarnessModel.id)
 
         query = query.filter(ProdHarness.updated_at.between(from_date, to_date))
-
-        query = query.filter(
-            db.or_(
-                db.func.hour(ProdHarness.updated_at).between(6, 14),
-                db.func.hour(ProdHarness.updated_at).between(14, 22),
-                db.func.hour(ProdHarness.updated_at).between(22, 23),
-                db.func.hour(ProdHarness.updated_at).between(0, 6)
-            )
-        )
-
         query = query.group_by(db.func.hour(ProdHarness.updated_at), HarnessModel.range_time)
-        query = query.order_by(db.func.hour(ProdHarness.updated_at))
 
         result = query.all()
-
-        data_by_hour = {row.hour: row for row in result}
-
-        # Initialize list to store results for all hours
-        data = []
-        current_hour = from_date.replace(minute=0, second=0, microsecond=0)
-
-        while current_hour <= to_date:
-            hour = current_hour.hour
-
-            if hour in data_by_hour:
-                row = data_by_hour[hour]
-                total_quantity = float(row.total_quantity or 0)
-                range_time = float(row.range_time or 1)
-                print(range_time)
-                productive_hours = (total_quantity * range_time) / vsm if range_time else 0
-                efficiency = ((total_quantity * range_time) / vsm) * 100 if range_time > 0 else 0
-            else:
-                total_quantity = 0
-                range_time = 0
-                productive_hours = 0
-                efficiency = 0
-
-            data.append({
-                'hour': hour,
-                'total_quantity': total_quantity,
-                'range_time': range_time,
-                'productive_hours': productive_hours,
-                'efficiency': efficiency
-            })
-
-            current_hour += timedelta(hours=1)
-
+                
+        data = [{'hour': h, 'total_quantity': 0, 'efficiency': 0} for h in range(from_date.hour, to_date.hour)]
+        for row in result:
+            row_efficiency = ((row.total_quantity * max(0, row.range_time)) / vsm) * 100
+            index = row.hour - from_date.hour
+            data[index]['efficiency'] += row_efficiency
+            data[index]['total_quantity'] += row.total_quantity
+        
         return jsonify(data), 200
 
     except ValueError as ve:
