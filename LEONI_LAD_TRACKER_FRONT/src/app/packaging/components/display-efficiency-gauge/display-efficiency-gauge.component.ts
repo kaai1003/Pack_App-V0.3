@@ -58,7 +58,7 @@ export class DisplayEfficiencyGaugeComponent implements OnInit {
         .subscribe((data) => {
           let eff = data.average_efficiency;
           this.efficiency.set(data.average_efficiency);
-          chart.data.datasets[0].data = [eff, 100 - eff];
+          chart.data.datasets[0].data = [eff, Math.max(0, 100 - eff)];
           chart.update();
         });
     };

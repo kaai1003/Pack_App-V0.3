@@ -35,7 +35,7 @@ export class DisplayEfficiencyGraphComponent implements OnInit {
       },
       options: {
         animation: { duration: 0 },
-        scales: { y: { min: 0, max: 150 } },
+        scales: { y: { min: 0 } },
         responsive: true,
         maintainAspectRatio: true,
         plugins: {
