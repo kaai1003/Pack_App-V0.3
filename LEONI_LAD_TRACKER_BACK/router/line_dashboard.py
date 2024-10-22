@@ -177,6 +177,7 @@ def sum_by_code_fournisseur():
         filters = request.json
         query = db.session.query(
             HarnessModel.ref.label('code_fournisseur'),
+            HarnessModel.range_time,
             db.func.count(ProdHarness.id).label('total_quantity')
         ).join(HarnessModel, ProdHarness.harness_id == HarnessModel.id).group_by(HarnessModel.ref)
         
@@ -193,7 +194,7 @@ def sum_by_code_fournisseur():
 
         result = query.all()
         
-        data = [{'code_fournisseur': row.code_fournisseur, 'total_quantity': row.total_quantity} for row in result]
+        data = [{'code_fournisseur': row.code_fournisseur, 'range_time': row.range_time, 'total_quantity': row.total_quantity} for row in result]
         return jsonify(data)
         
     except Exception as e:

@@ -50,10 +50,12 @@ export class HourProduitsDTO {
 export class refQuantityDto {
     code_fournisseur: string;
     total_quantity: number;
+    range_time: number;
 
-    constructor(code: string, quantity: number) {
+    constructor(code: string, quantity: number, range_time:number) {
         this.code_fournisseur = code;
         this.total_quantity = quantity;
+        this.range_time = range_time;
     }
 }
 

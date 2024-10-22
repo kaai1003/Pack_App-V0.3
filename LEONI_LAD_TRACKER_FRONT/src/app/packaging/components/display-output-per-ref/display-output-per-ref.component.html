@@ -1,14 +1,16 @@
 <mat-card-title class="text-center mt-2">Output per Part number</mat-card-title>
 <div *ngFor="let count of countFxPerRef" class="col-6 p-2 rounded-2">
   <mat-card
-    class="my-1 orange-color fw-bold d-flex border rounded-3"
+    class="orange-color fw-bold d-flex border rounded-3"
     [class.bg-danger-subtle]="count.total_quantity <= 0"
   >
-    <div class="d-flex justify-content-around">
-      <h3 class="fw-bold text-orange my-auto">
+    <div class="d-flex justify-content-around align-items-center py-1">
+      <h3 class="fw-bold text-orange m-0">
         {{ count.code_fournisseur + "  " }}
       </h3>
+      <h3 class="m-0">{{count.range_time}}</h3>
       <h3
+        class="m-0"
         [class.light-blue-color]="count.total_quantity > 0"
         [class.text-danger]="count.total_quantity <= 0"
       >
