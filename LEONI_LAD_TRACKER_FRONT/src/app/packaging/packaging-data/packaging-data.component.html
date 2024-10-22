@@ -158,7 +158,7 @@
               <!-- date column  -->
               <ng-container matColumnDef="date">
                 <th *matHeaderCellDef class="blue-color" mat-header-cell mat-sort-header> Created at</th>
-                <td *matCellDef="let element" mat-cell> {{ element.created_at | date : 'dd/MM/yyyy HH:mm:ss' }}</td>
+                <td *matCellDef="let element" mat-cell>{{ element.created_at | date : 'dd/MM/yyyy HH:mm:ss' : "0" }}</td>
               </ng-container>
 
               <!-- Action Column -->
