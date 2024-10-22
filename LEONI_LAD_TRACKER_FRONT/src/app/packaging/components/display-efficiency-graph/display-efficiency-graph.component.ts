@@ -82,7 +82,9 @@ export class DisplayEfficiencyGraphComponent implements OnInit {
           chart.data.labels = data.map(
             (item) => item.hour + 'h -> ' + (item.hour + 1) + 'h'
           );
-          chart.data.datasets[0].data = data.map((item) => item.efficiency);
+          let chartData = data.map((item) => item.efficiency);
+          chart.data.datasets[0].data = chartData;
+          chart.options.scales.y.max = Math.max(...chartData, 120);
           chart.update();
         });
     };
