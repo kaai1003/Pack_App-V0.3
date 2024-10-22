@@ -378,8 +378,6 @@ def calculate_efficiency():
             return jsonify({'error': 'vsm (number of operators) is required and should be greater than 0'}), 400
 
         from_date_str = filters.get('from')
-        
-        # Get the current datetime and format it as a string
         to_date_str = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
         if not from_date_str:
@@ -387,75 +385,29 @@ def calculate_efficiency():
 
         # Parse the date strings into datetime objects
         from_date = datetime.strptime(from_date_str, '%Y-%m-%d %H:%M:%S')
-        to_date = datetime.strptime(to_date_str, '%Y-%m-%d %H:%M:%S')
-
+        to_8hour = from_date + timedelta(hours = 8)
+        now_date = datetime.strptime(to_date_str, '%Y-%m-%d %H:%M:%S')
+        to_date = min(to_8hour, now_date)
    
         query = db.session.query(
-            db.func.hour(ProdHarness.updated_at).label('hour'),
             db.func.count(ProdHarness.id).label('total_quantity'),
             HarnessModel.range_time
         ).join(HarnessModel, ProdHarness.harness_id == HarnessModel.id)
-
         query = query.filter(ProdHarness.updated_at.between(from_date, to_date))
-
-        query = query.filter(
-            db.or_(
-                db.func.hour(ProdHarness.updated_at).between(6, 14),
-                db.func.hour(ProdHarness.updated_at).between(14, 22),
-                db.func.hour(ProdHarness.updated_at).between(22, 23),
-                db.func.hour(ProdHarness.updated_at).between(0, 6)
-            )
-        )
-
-        query = query.group_by(db.func.hour(ProdHarness.updated_at), HarnessModel.range_time)
-        query = query.order_by(db.func.hour(ProdHarness.updated_at))
+        query = query.group_by(HarnessModel.range_time)
 
         result = query.all()
 
-        data_by_hour = {row.hour: row for row in result}
-
-        # Initialize list to store results for all hours
-        data = []
-        current_hour = from_date.replace(minute=0, second=0, microsecond=0)
-
-        while current_hour <= to_date:
-            hour = current_hour.hour
-
-            if hour in data_by_hour:
-                row = data_by_hour[hour]
-                total_quantity = float(row.total_quantity or 0)
-                range_time = float(row.range_time or 1)
-                productive_hours = (total_quantity * range_time) / vsm if range_time else 0
-                efficiency = ((total_quantity * range_time) / vsm) * 100 if range_time > 0 else 0
-            else:
-                total_quantity = 0
-                range_time = 0
-                productive_hours = 0
-                efficiency = 0
-
-            data.append({
-                'hour': hour,
-                'total_quantity': total_quantity,
-                'range_time': range_time,
-                'productive_hours': productive_hours,
-                'efficiency': efficiency
-            })
-
-            current_hour += timedelta(hours=1)
-
-        # Calculate total efficiency
-        total_efficiency = sum(da['efficiency'] for da in data)  # Sum of efficiencies
-        count_of_hours_with_data = len(data)  # Count of hours that have data
-
-        # Avoid division by zero
-        if count_of_hours_with_data > 0:
-            average_efficiency = total_efficiency / count_of_hours_with_data
-            print(count_of_hours_with_data)
-        else:
-            average_efficiency = 0
-
-        return jsonify({'average_efficiency': average_efficiency}), 200
-
+        number_of_hours = to_date.hour - from_date.hour
+        worked_hours = number_of_hours * vsm
+        average_efficiency = 0
+        
+        for row in result:
+            prod_hours = row.total_quantity * row.range_time
+            average_efficiency += prod_hours / worked_hours
+        
+        return jsonify({'average_efficiency': 100 * average_efficiency}), 200
+    
     except ValueError as ve:
         return jsonify({'error': 'Date format is incorrect: ' + str(ve)}), 400
     except Exception as e:
